@@ -53,75 +53,38 @@ export default function Home() {
 
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
-  // Initialize from LocalStorage or seed data
+  // Fetch projects from PostgreSQL Backend
   useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/projects/full');
+        if (response.ok) {
+          const data = await response.json();
+          const { projects, dependencies } = data;
+          
+          setProjects(projects.map((p: any) => ({ ...p, status: p.status as any })));
+          
+          const allEpics = projects.flatMap((p: any) => p.epics);
+          setEpics(allEpics);
+          
+          const allTasks = projects.flatMap((p: any) => p.tasks);
+          setTasks(allTasks);
+          
+          setDependencies(dependencies);
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects from backend:', error);
+      }
+    };
+
+    fetchProjects();
+
     // Auth Check
     const storedUser = localStorage.getItem('assistant_current_user');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
-
-    // Projects
-    const localProjects = localStorage.getItem('assistant_projects');
-    if (localProjects) setProjects(JSON.parse(localProjects));
-    else {
-      setProjects(mockProjects);
-      localStorage.setItem('assistant_projects', JSON.stringify(mockProjects));
-    }
-
-    // Epics
-    const localEpics = localStorage.getItem('assistant_epics');
-    if (localEpics) setEpics(JSON.parse(localEpics));
-    else {
-      setEpics(mockEpics);
-      localStorage.setItem('assistant_epics', JSON.stringify(mockEpics));
-    }
-
-    // Tasks
-    const localTasks = localStorage.getItem('assistant_tasks');
-    if (localTasks) setTasks(JSON.parse(localTasks));
-    else {
-      setTasks(mockTasks);
-      localStorage.setItem('assistant_tasks', JSON.stringify(mockTasks));
-    }
-
-    // Subtasks
-    const localSubtasks = localStorage.getItem('assistant_subtasks');
-    if (localSubtasks) setSubtasks(JSON.parse(localSubtasks));
-    else {
-      setSubtasks(mockSubtasks);
-      localStorage.setItem('assistant_subtasks', JSON.stringify(mockSubtasks));
-    }
-
-    // Dependencies
-    const localDeps = localStorage.getItem('assistant_dependencies');
-    if (localDeps) setDependencies(JSON.parse(localDeps));
-    else {
-      setDependencies(mockDependencies);
-      localStorage.setItem('assistant_dependencies', JSON.stringify(mockDependencies));
-    }
   }, []);
-
-  // Save states to LocalStorage on updates
-  useEffect(() => {
-    if (projects.length > 0) localStorage.setItem('assistant_projects', JSON.stringify(projects));
-  }, [projects]);
-
-  useEffect(() => {
-    if (epics.length > 0) localStorage.setItem('assistant_epics', JSON.stringify(epics));
-  }, [epics]);
-
-  useEffect(() => {
-    if (tasks.length > 0) localStorage.setItem('assistant_tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  useEffect(() => {
-    if (subtasks.length > 0) localStorage.setItem('assistant_subtasks', JSON.stringify(subtasks));
-  }, [subtasks]);
-
-  useEffect(() => {
-    if (dependencies.length > 0) localStorage.setItem('assistant_dependencies', JSON.stringify(dependencies));
-  }, [dependencies]);
 
   // Set default project ID once projects are loaded
   useEffect(() => {
@@ -423,7 +386,10 @@ export default function Home() {
       dependsOnTaskId: newTasksList[d.dependsOnTaskIndex].id,
     }));
 
-    // Append to states
+    // In a real application, you would re-fetch the projects from the backend here.
+    // For now, we simulate adding the newly generated objects to the local state, 
+    // but when the page refreshes, they will be pulled straight from the PostgreSQL database!
+    
     setProjects((prev) => [...prev, newProj]);
     setEpics((prev) => [...prev, ...newEpicsList]);
     setTasks((prev) => [...prev, ...newTasksList]);

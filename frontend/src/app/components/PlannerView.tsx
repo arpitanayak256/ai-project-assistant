@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Sparkles, Terminal, FileText, Send, Layers, GitFork, ArrowRight, Play } from 'lucide-react';
-import { promptPresets, GenerationResult } from '../mockInitialData';
-import { TaskStatus, TaskPriority } from '../types';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Terminal, FileText, Send, Layers, GitFork, ArrowRight, Play, Paperclip, X } from 'lucide-react';
+import { GenerationResult } from '../mockInitialData';
 
 interface PlannerViewProps {
   onGenerateProject: (generation: GenerationResult) => void;
@@ -11,9 +10,12 @@ interface PlannerViewProps {
 
 export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
   const [prompt, setPrompt] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
   const [generatedPlan, setGeneratedPlan] = useState<GenerationResult | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const steps = [
     { title: 'Analyzing Requirements', desc: 'Running NLP parser on unstructured requirements...', icon: Terminal },
@@ -23,76 +25,59 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
     { title: 'Resolving Dependency Network', desc: 'Configuring topological sort for execution timelines...', icon: GitFork }
   ];
 
-  const handleSelectPreset = (presetText: string) => {
-    setPrompt(presetText);
-    setGeneratedPlan(null);
+  // Run generation step animations while waiting for backend
+  useEffect(() => {
+    if (!isGenerating) return;
+    const interval = setInterval(() => {
+      setGenerationStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
+    }, 2000); // Step every 2 seconds while waiting for AI
+    return () => clearInterval(interval);
+  }, [isGenerating, steps.length]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
+    }
   };
 
-  const handleGenerate = (e: React.FormEvent) => {
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prompt.trim()) return;
+    if (!prompt.trim() && files.length === 0) return;
 
     setIsGenerating(true);
     setGenerationStep(0);
     setGeneratedPlan(null);
-  };
+    setErrorMsg('');
 
-  // Run generation step animations
-  useEffect(() => {
-    if (!isGenerating) return;
-
-    const interval = setInterval(() => {
-      setGenerationStep((prev) => {
-        if (prev >= steps.length - 1) {
-          clearInterval(interval);
-
-          // Find matching preset, or construct a dynamic mock result
-          const matchedPreset = promptPresets.find(
-            (p) => prompt.toLowerCase().includes(p.title.toLowerCase().substring(0, 5)) ||
-                   p.prompt.toLowerCase().includes(prompt.toLowerCase().substring(0, 10))
-          ) || promptPresets[0]; // fallback to Exam System if nothing matches
-
-          // If they typed something random, generate custom project details
-          let resultPlan = matchedPreset.result;
-          if (!promptPresets.some(p => p.prompt === prompt)) {
-            const tempTitle = prompt.length > 30 ? prompt.substring(0, 30) + '...' : prompt;
-            resultPlan = {
-              project: {
-                name: `Custom: ${tempTitle}`,
-                description: `AI-generated project based on requirements: "${prompt}"`,
-                status: 'ACTIVE'
-              },
-              epics: [
-                { title: 'Phase 1: Foundation', description: 'Core database, schema design, and basic authentication APIs.' },
-                { title: 'Phase 2: Core Functionality', description: 'Primary business logic, views, and custom handlers.' },
-                { title: 'Phase 3: Integration & Polish', description: 'Third-party setups, testing pipelines, and layout styles.' }
-              ],
-              tasks: [
-                { epicIndex: 0, title: 'Database schema design and migration config', description: 'Define primary tables and relationships.', status: 'TODO' as TaskStatus, priority: 'URGENT' as TaskPriority, estimatedHours: 8, aiExplanation: 'Standard schema initialization. Estimated 8 hours.' },
-                { epicIndex: 0, title: 'User authentication and access permissions API', description: 'Setup registration, session checks.', status: 'TODO' as TaskStatus, priority: 'HIGH' as TaskPriority, estimatedHours: 10, aiExplanation: 'Requires security handlers. Estimated 10 hours.' },
-                { epicIndex: 1, title: 'Core dashboard layout and widgets', description: 'Main front-end layout component views.', status: 'TODO' as TaskStatus, priority: 'HIGH' as TaskPriority, estimatedHours: 12, aiExplanation: 'Visual layout components. Estimated 12 hours.' },
-                { epicIndex: 1, title: 'Custom search filters and reports', description: 'Database query filters and listings.', status: 'TODO' as TaskStatus, priority: 'MEDIUM' as TaskPriority, estimatedHours: 14, aiExplanation: 'Query sorting, table lists. Estimated 14 hours.' },
-                { epicIndex: 2, title: 'Integrate external API integrations', description: 'Connecting core services to external servers.', status: 'TODO' as TaskStatus, priority: 'MEDIUM' as TaskPriority, estimatedHours: 16, aiExplanation: 'Integration testing. Estimated 16 hours.' },
-                { epicIndex: 2, title: 'Unit and end-to-end testing', description: 'Verify page loads, edge cases, APIs validation.', status: 'TODO' as TaskStatus, priority: 'LOW' as TaskPriority, estimatedHours: 8, aiExplanation: 'Basic test coverage. Estimated 8 hours.' }
-              ],
-              dependencies: [
-                { taskIndex: 1, dependsOnTaskIndex: 0 },
-                { taskIndex: 2, dependsOnTaskIndex: 1 },
-                { taskIndex: 3, dependsOnTaskIndex: 2 }
-              ]
-            };
-          }
-
-          setGeneratedPlan(resultPlan);
-          setIsGenerating(false);
-          return prev;
-        }
-        return prev + 1;
+    try {
+      const formData = new FormData();
+      formData.append('prompt', prompt);
+      files.forEach((file) => {
+        formData.append('files', file); // 'files' must match what Multer expects in the backend
       });
-    }, 1200);
 
-    return () => clearInterval(interval);
-  }, [isGenerating, prompt]);
+      const response = await fetch('http://localhost:3001/ai/generate-plan', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate project plan from the backend.');
+      }
+
+      const resultPlan = await response.json();
+      setGeneratedPlan(resultPlan);
+    } catch (error: any) {
+      console.error('Generation error:', error);
+      setErrorMsg(error.message || 'An error occurred during generation.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -105,7 +90,7 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
             </div>
             <div>
               <h2 className="text-sm font-bold text-zinc-200">AI Requirement Planner</h2>
-              <p className="text-[10px] text-zinc-500">Provide unstructured specs in natural language</p>
+              <p className="text-[10px] text-zinc-500">Provide unstructured specs or upload PDFs/Images</p>
             </div>
           </div>
 
@@ -114,44 +99,67 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe your application requirements. (e.g. 'I need to build an online examination system. Admin should create exams, add questions, schedule shifts, students should register and receive results...')"
-                className="w-full h-44 bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 leading-relaxed resize-none"
+                placeholder="Describe your application requirements... (e.g. 'I need to build an online examination system.')"
+                className="w-full h-44 bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 pb-12 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 leading-relaxed resize-none"
                 disabled={isGenerating}
               />
+              
+              {/* File Upload Trigger */}
+              <div className="absolute left-3 bottom-3 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isGenerating}
+                  className="p-1.5 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
+                  title="Attach PDFs or Screenshots"
+                >
+                  <Paperclip className="w-4 h-4" />
+                </button>
+                <input
+                  type="file"
+                  multiple
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  accept=".pdf,image/*"
+                />
+              </div>
+
+              {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isGenerating || !prompt.trim()}
+                disabled={isGenerating || (!prompt.trim() && files.length === 0)}
                 className="absolute right-3 bottom-3 p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
               </button>
             </div>
+            
+            {/* Attached Files List */}
+            {files.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {files.map((f, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5 bg-zinc-800/50 border border-zinc-700 px-2 py-1 rounded-md text-[10px] text-zinc-300">
+                    <span className="truncate max-w-[120px]">{f.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(idx)}
+                      disabled={isGenerating}
+                      className="text-zinc-500 hover:text-red-400"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </form>
 
-          {/* Quick Presets */}
-          <div className="space-y-2 pt-2">
-            <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block">Or select a pre-defined MVP document:</span>
-            <div className="space-y-2">
-              {promptPresets.map((preset, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSelectPreset(preset.prompt)}
-                  disabled={isGenerating}
-                  className={`w-full text-left p-3 rounded-xl border text-[11px] leading-relaxed transition-all flex justify-between items-center gap-2 ${
-                    prompt === preset.prompt
-                      ? 'bg-indigo-500/5 border-indigo-500/40 text-indigo-300 font-semibold'
-                      : 'bg-zinc-950/40 border-zinc-800/80 hover:border-zinc-700 text-zinc-400 hover:bg-zinc-900/40'
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <span className="block font-bold truncate">{preset.title}</span>
-                    <span className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">{preset.prompt}</span>
-                  </div>
-                  <ArrowRight className="w-3.5 h-3.5 shrink-0 opacity-60" />
-                </button>
-              ))}
+          {errorMsg && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-400">
+              {errorMsg}
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -165,7 +173,6 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
             /* Generating State */
             <div className="flex-1 flex flex-col justify-center items-center py-8 space-y-8 relative z-10">
               <div className="relative w-20 h-20">
-                {/* Glowing ring */}
                 <div className="absolute inset-0 border-4 border-indigo-500/10 rounded-full" />
                 <div className="absolute inset-0 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
                 <div className="absolute inset-2 border border-violet-500/20 rounded-full flex items-center justify-center text-indigo-400">
@@ -279,7 +286,7 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
               <div>
                 <h3 className="font-semibold text-xs text-zinc-400">Plan Visualizer</h3>
                 <p className="text-[10px] text-zinc-500 max-w-xs mt-1 leading-normal">
-                  Plan outlines, epic lists, priority rankings, effort estimates, and Gantt charts will be visualized here during parsing.
+                  Upload PDF requirements, screenshots, or type your idea. The AI will stream the generated project plan here.
                 </p>
               </div>
             </div>
