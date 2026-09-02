@@ -18,9 +18,9 @@ export class AiService {
     if (apiKey) {
       const isOpenRouter = apiKey.startsWith('sk-or-');
       this.model = new ChatOpenAI({
-        modelName: isOpenRouter ? 'openai/gpt-4o' : 'gpt-4o',
+        modelName: isOpenRouter ? 'openai/gpt-4o-mini' : 'gpt-4o-mini',
         temperature: 0.2,
-        maxTokens: 1200, // Explicitly limit output tokens to prevent OpenRouter 402 balance errors (User balance is 1343)
+        maxTokens: 4000, // Mini model is 30x cheaper, allowing us to safely increase limit to 4000 for full details
         openAIApiKey: apiKey,
         configuration: isOpenRouter ? {
           baseURL: 'https://openrouter.ai/api/v1'
@@ -57,35 +57,45 @@ export class AiService {
 
     const generationSchema = z.object({
       projectName: z.string().describe('The name of the project'),
-      projectDescription: z.string().describe('A 1-2 sentence description of the project'),
+      projectDescription: z.string().describe('A 1-2 sentence description'),
+      architectureDiagram: z.string().describe('A very small, basic Mermaid.js flowchart (max 4 nodes)'),
+      databaseSchema: z.array(z.object({
+        tableName: z.string(),
+        columns: z.array(z.string())
+      })).describe('Proposed relational database schema tables and columns'),
+      apiEndpoints: z.array(z.object({
+        method: z.enum(['GET', 'POST', 'PUT', 'DELETE']),
+        path: z.string(),
+        purpose: z.string()
+      })).describe('List of critical REST API endpoints'),
       epics: z.array(z.object({
-        title: z.string().describe('The epic title'),
-        description: z.string().describe('A brief description of this epic'),
+        title: z.string(),
+        description: z.string(),
         tasks: z.array(z.object({
-          tempId: z.string().describe('Temporary ID (e.g., "task-1") to handle task dependencies before DB saving'),
-          title: z.string().describe('The task title'),
-          description: z.string().describe('Detailed task description'),
-          priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).describe('Task priority'),
-          estimatedHours: z.number().describe('Estimated hours to complete'),
+          tempId: z.string(),
+          title: z.string(),
+          description: z.string(),
+          priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
+          estimatedHours: z.number(),
           subtasks: z.array(z.object({
-            title: z.string().describe('The subtask title')
-          })).describe('Actionable subtasks for the task'),
-          dependsOnTempIds: z.array(z.string()).describe('References tempId of prerequisite tasks. Empty array if none.'),
-          aiExplanation: z.string().describe('Brief explanation for why this task is needed and the time estimate')
-        })).describe('The actionable tasks inside this epic')
+            title: z.string()
+          })).describe('Actionable subtasks'),
+          dependsOnTempIds: z.array(z.string()).describe('Empty array if none.'),
+          aiExplanation: z.string()
+        })).describe('Tasks inside this epic')
       })).describe('The high-level epics/phases of the project')
     });
 
-    // 2. Lock the AI into "data-entry mode" using our Blueprint
-    const structuredModel = this.model.withStructuredOutput(generationSchema);
+    const structuredModel = this.model.withStructuredOutput(generationSchema, {
+      name: 'project_blueprint',
+    });
 
-    // 3. Build the prompt with text and images
+    const SYSTEM_PROMPT = `
+You are an expert Agile Product Owner and Lead System Architect. Your task is to analyze user requirements and break them down into structured Epics, Tasks with hourly estimations, Subtasks, and Task Dependencies. You MUST return ONLY valid JSON matching the requested schema. Provide comprehensive detail for the database schema, API endpoints, and a detailed Mermaid diagram.
+`;
+
     const messages: any[] = [
-      new SystemMessage(
-        'You are an expert Technical Project Manager. Your job is to analyze the requirements ' +
-        'and create a comprehensive project plan broken down into Epics and Tasks. ' +
-        'You MUST strictly return the output in the requested JSON structure.'
-      ),
+      new SystemMessage(SYSTEM_PROMPT),
     ];
 
     let userContent = `User Prompt: ${userPrompt}\n`;

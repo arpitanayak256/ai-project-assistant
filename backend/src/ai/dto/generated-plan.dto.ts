@@ -22,5 +22,8 @@ export interface GeneratedEpic {
 export interface GeneratedProjectPlan {
   projectName: string;
   projectDescription: string;
+  architectureDiagram: string;
+  databaseSchema: { tableName: string; columns: string[] }[];
+  apiEndpoints: { method: 'GET' | 'POST' | 'PUT' | 'DELETE'; path: string; purpose: string }[];
   epics: GeneratedEpic[];
 }

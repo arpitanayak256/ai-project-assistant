@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Terminal, FileText, Send, Layers, GitFork, ArrowRight, Play, Paperclip, X } from 'lucide-react';
+import { Sparkles, Terminal, FileText, Send, Layers, GitFork, ArrowRight, Play, Paperclip, X, Database, Network, GitBranch } from 'lucide-react';
+import mermaid from 'mermaid';
 
 export interface GeneratedSubtask {
   title: string;
@@ -39,6 +40,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
   const [generationStep, setGenerationStep] = useState(0);
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedProjectPlan | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [activeTab, setActiveTab] = useState<'epics' | 'architecture' | 'database' | 'api'>('epics');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const steps = [
@@ -126,6 +128,13 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
     (sum, e) => sum + e.tasks.reduce((s, t) => s + t.estimatedHours, 0),
     0
   ) || 0;
+
+  useEffect(() => {
+    if (generatedPlan && activeTab === 'architecture') {
+      mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+      mermaid.run({ querySelector: '.mermaid' });
+    }
+  }, [generatedPlan, activeTab]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -304,39 +313,96 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                   </div>
                 </div>
 
-                {/* Preview of Epics */}
+                {/* Tabbed Navigation */}
+                <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
+                  <button onClick={() => setActiveTab('epics')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'epics' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                    <Layers className="w-3 h-3" /> Epics & Tasks
+                  </button>
+                  <button onClick={() => setActiveTab('architecture')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'architecture' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                    <GitBranch className="w-3 h-3" /> Architecture
+                  </button>
+                  <button onClick={() => setActiveTab('database')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'database' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                    <Database className="w-3 h-3" /> Database
+                  </button>
+                  <button onClick={() => setActiveTab('api')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'api' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                    <Network className="w-3 h-3" /> API Routes
+                  </button>
+                </div>
+
+                {/* Render Active Tab */}
                 <div className="space-y-2">
-                  <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block">Detailed Execution Plan:</span>
-                  <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                    {generatedPlan.epics.map((epic, eIdx) => (
-                      <div key={eIdx} className="bg-zinc-900/50 border border-zinc-800 p-3 rounded-xl space-y-2">
-                        <div className="border-b border-zinc-800 pb-2">
-                          <span className="text-xs font-bold text-zinc-200 block">{epic.title}</span>
-                          <span className="text-[10px] text-zinc-500 leading-normal">{epic.description}</span>
-                        </div>
-                        <div className="space-y-2">
-                          {epic.tasks.map((task, tIdx) => (
-                            <div key={tIdx} className="bg-zinc-950 border border-zinc-800/80 p-2 rounded-lg">
-                              <div className="flex justify-between items-start">
-                                <span className="text-[10px] font-semibold text-zinc-300">{task.title}</span>
-                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">{task.estimatedHours}h</span>
-                              </div>
-                              {task.subtasks && task.subtasks.length > 0 && (
-                                <div className="mt-1.5 pl-2 border-l border-indigo-500/30 space-y-1">
-                                  {task.subtasks.map((sub, sIdx) => (
-                                    <div key={sIdx} className="text-[9px] text-zinc-500 flex gap-1 items-center">
-                                      <span className="w-1 h-1 rounded-full bg-zinc-700 shrink-0" />
-                                      <span className="truncate">{sub.title}</span>
-                                    </div>
-                                  ))}
+                  {activeTab === 'epics' && (
+                    <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                      {generatedPlan.epics.map((epic, eIdx) => (
+                        <div key={eIdx} className="bg-zinc-900/50 border border-zinc-800 p-3 rounded-xl space-y-2">
+                          <div className="border-b border-zinc-800 pb-2">
+                            <span className="text-xs font-bold text-zinc-200 block">{epic.title}</span>
+                            <span className="text-[10px] text-zinc-500 leading-normal">{epic.description}</span>
+                          </div>
+                          <div className="space-y-2">
+                            {epic.tasks.map((task, tIdx) => (
+                              <div key={tIdx} className="bg-zinc-950 border border-zinc-800/80 p-2 rounded-lg">
+                                <div className="flex justify-between items-start">
+                                  <span className="text-[10px] font-semibold text-zinc-300">{task.title}</span>
+                                  <span className="text-[8px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">{task.estimatedHours}h</span>
                                 </div>
-                              )}
-                            </div>
-                          ))}
+                                {task.subtasks && task.subtasks.length > 0 && (
+                                  <div className="mt-1.5 pl-2 border-l border-indigo-500/30 space-y-1">
+                                    {task.subtasks.map((sub, sIdx) => (
+                                      <div key={sIdx} className="text-[9px] text-zinc-500 flex gap-1 items-center">
+                                        <span className="w-1 h-1 rounded-full bg-zinc-700 shrink-0" />
+                                        <span className="truncate">{sub.title}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {activeTab === 'architecture' && generatedPlan.architectureDiagram && (
+                    <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl max-h-64 overflow-auto flex justify-center custom-scrollbar">
+                      <pre className="mermaid text-[10px]">{generatedPlan.architectureDiagram}</pre>
+                    </div>
+                  )}
+
+                  {activeTab === 'database' && generatedPlan.databaseSchema && (
+                    <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                      {generatedPlan.databaseSchema.map((table, idx) => (
+                        <div key={idx} className="bg-zinc-950 border border-zinc-800 rounded-xl p-3 space-y-2">
+                          <div className="flex items-center gap-1.5 pb-2 border-b border-zinc-850">
+                            <Database className="w-3 h-3 text-indigo-400" />
+                            <span className="text-xs font-bold text-zinc-200">{table.tableName}</span>
+                          </div>
+                          <div className="space-y-1">
+                            {table.columns.map((col, cIdx) => (
+                              <div key={cIdx} className="text-[9px] text-zinc-400 font-mono">{col}</div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {activeTab === 'api' && generatedPlan.apiEndpoints && (
+                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                      {generatedPlan.apiEndpoints.map((api, idx) => (
+                        <div key={idx} className="bg-zinc-950 border border-zinc-800 p-2.5 rounded-lg flex items-start gap-3">
+                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${api.method === 'GET' ? 'bg-blue-500/10 text-blue-400' : api.method === 'POST' ? 'bg-emerald-500/10 text-emerald-400' : api.method === 'PUT' ? 'bg-amber-500/10 text-amber-400' : 'bg-red-500/10 text-red-400'}`}>
+                            {api.method}
+                          </span>
+                          <div>
+                            <span className="text-[10px] font-mono text-zinc-300 block mb-0.5">{api.path}</span>
+                            <span className="text-[9px] text-zinc-500 leading-normal">{api.purpose}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -27,6 +27,9 @@ export class ProjectsService {
           name: plan.projectName,
           description: plan.projectDescription,
           status: 'ACTIVE',
+          architectureDiagram: plan.architectureDiagram,
+          databaseSchema: plan.databaseSchema,
+          apiEndpoints: plan.apiEndpoints,
         },
       });
 
