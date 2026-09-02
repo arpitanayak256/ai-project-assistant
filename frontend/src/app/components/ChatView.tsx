@@ -209,15 +209,15 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
   };
 
   return (
-    <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl h-[560px] flex flex-col justify-between overflow-hidden relative">
+    <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl h-[560px] flex flex-col justify-between overflow-hidden relative">
       {/* Header */}
-      <div className="p-4 border-b border-zinc-850 bg-zinc-950/40 flex items-center justify-between shrink-0">
+      <div className="p-4 border-b border-zinc-200 dark:border-zinc-850 bg-white dark:bg-zinc-950/40 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400">
             <Cpu className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-xs font-bold text-zinc-200">AI Contextual Co-Pilot</span>
+            <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">AI Contextual Co-Pilot</span>
             <span className="text-[9px] text-emerald-400 block font-semibold flex items-center gap-1 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> Online & Indexed
             </span>
@@ -237,7 +237,7 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
             >
               {/* Avatar */}
               <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border ${
-                isAI ? 'bg-indigo-600/10 border-indigo-500/30 text-indigo-400 font-bold text-xs' : 'border-zinc-800'
+                isAI ? 'bg-indigo-600/10 border-indigo-500/30 text-indigo-400 font-bold text-xs' : 'border-zinc-200 dark:border-zinc-800'
               }`}>
                 {isAI ? 'AI' : <img src={currentUser.avatarUrl} className="w-full h-full rounded-full" />}
               </div>
@@ -245,7 +245,7 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
               {/* Message Bubble */}
               <div className={`p-4 rounded-2xl text-xs leading-relaxed space-y-2 ${
                 isAI
-                  ? 'bg-zinc-950/60 border border-zinc-850 text-zinc-350 rounded-tl-sm'
+                  ? 'bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-850 text-zinc-350 rounded-tl-sm'
                   : 'bg-indigo-600 text-white rounded-tr-sm shadow-lg shadow-indigo-600/10'
               }`}>
                 {/* Simulated Markdown renderer */}
@@ -253,16 +253,16 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
                   {msg.content.split('\n').map((line, idx) => {
                     // Render simple lists, headers, and strong markdown on client
                     if (line.startsWith('### ')) {
-                      return <h3 key={idx} className="font-bold text-sm text-zinc-100 mt-2 mb-1">{line.replace('### ', '')}</h3>;
+                      return <h3 key={idx} className="font-bold text-sm text-zinc-900 dark:text-zinc-100 mt-2 mb-1">{line.replace('### ', '')}</h3>;
                     }
                     if (line.startsWith('#### ')) {
-                      return <h4 key={idx} className="font-semibold text-xs text-zinc-200 mt-2 mb-1">{line.replace('#### ', '')}</h4>;
+                      return <h4 key={idx} className="font-semibold text-xs text-zinc-800 dark:text-zinc-200 mt-2 mb-1">{line.replace('#### ', '')}</h4>;
                     }
                     if (line.startsWith('- ') || line.startsWith('* ')) {
-                      return <li key={idx} className="list-disc pl-4 mt-1 text-zinc-300">{line.substring(2)}</li>;
+                      return <li key={idx} className="list-disc pl-4 mt-1 text-zinc-700 dark:text-zinc-300">{line.substring(2)}</li>;
                     }
                     if (line.match(/^\d+\./)) {
-                      return <div key={idx} className="pl-4 mt-1 text-zinc-300">{line}</div>;
+                      return <div key={idx} className="pl-4 mt-1 text-zinc-700 dark:text-zinc-300">{line}</div>;
                     }
                     return <p key={idx} className="mt-1">{line}</p>;
                   })}
@@ -278,7 +278,7 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
             <div className="w-8 h-8 rounded-full bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-xs">
               AI
             </div>
-            <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-2xl flex items-center gap-1.5">
+            <div className="bg-white dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-850 p-3 rounded-2xl flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-zinc-600 animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-1.5 h-1.5 rounded-full bg-zinc-600 animate-bounce" style={{ animationDelay: '150ms' }} />
               <span className="w-1.5 h-1.5 rounded-full bg-zinc-600 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -289,7 +289,7 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
       </div>
 
       {/* Suggested Questions Tags & Chat Input */}
-      <div className="p-4 border-t border-zinc-850 bg-zinc-950/20 shrink-0 space-y-3">
+      <div className="p-4 border-t border-zinc-200 dark:border-zinc-850 bg-white dark:bg-zinc-950/20 shrink-0 space-y-3">
         {/* Quick Tags */}
         <div className="flex flex-wrap gap-2">
           {[
@@ -302,7 +302,7 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
               key={idx}
               onClick={() => handleSendMessage(tag)}
               disabled={isLoading}
-              className="text-[10px] font-semibold px-2.5 py-1.5 rounded-xl bg-zinc-950 border border-zinc-850 hover:border-indigo-500/40 text-zinc-400 hover:text-zinc-200 transition-all disabled:opacity-50"
+              className="text-[10px] font-semibold px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 hover:border-indigo-500/40 text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:text-zinc-200 transition-all disabled:opacity-50"
             >
               {tag}
             </button>
@@ -317,7 +317,7 @@ As an AI specialized in project analysis, I can help you manage requirements, ta
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(input)}
             placeholder={`Ask about tasks or health in "${project.name}"...`}
-            className="flex-1 bg-zinc-950 border border-zinc-850 rounded-xl px-3.5 py-2 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500"
+            className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-xl px-3.5 py-2 text-xs text-zinc-700 dark:text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500"
             disabled={isLoading}
           />
           <button

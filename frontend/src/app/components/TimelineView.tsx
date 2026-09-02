@@ -68,12 +68,12 @@ export default function TimelineView({
   return (
     <div className="space-y-4">
       {/* Legend & Summary */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/30 border border-zinc-800/80 p-4 rounded-2xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/80 p-4 rounded-2xl">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-indigo-400" />
-          <span className="text-xs text-zinc-300 font-semibold">Suggested 4-Week Execution Schedule</span>
+          <span className="text-xs text-zinc-700 dark:text-zinc-300 font-semibold">Suggested 4-Week Execution Schedule</span>
         </div>
-        <div className="flex items-center gap-3 text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">
+        <div className="flex items-center gap-3 text-[10px] text-zinc-600 dark:text-zinc-400 font-semibold uppercase tracking-wider">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-red-500" /> Urgent</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-orange-500" /> High</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-yellow-500" /> Medium</span>
@@ -82,14 +82,14 @@ export default function TimelineView({
       </div>
 
       {/* Main Gantt Grid Container */}
-      <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl overflow-hidden p-6 relative">
+      <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden p-6 relative">
         {/* Timeline Table Grid Columns */}
-        <div className="grid grid-cols-12 gap-0 border-b border-zinc-800 pb-3 font-semibold text-[10px] text-zinc-500 uppercase text-center">
+        <div className="grid grid-cols-12 gap-0 border-b border-zinc-200 dark:border-zinc-800 pb-3 font-semibold text-[10px] text-zinc-500 dark:text-zinc-500 uppercase text-center">
           <div className="col-span-4 text-left pl-2">Task Details</div>
-          <div className="col-span-2 border-l border-zinc-850">Week 1</div>
-          <div className="col-span-2 border-l border-zinc-850">Week 2</div>
-          <div className="col-span-2 border-l border-zinc-850">Week 3</div>
-          <div className="col-span-2 border-l border-zinc-850">Week 4</div>
+          <div className="col-span-2 border-l border-zinc-200 dark:border-zinc-850">Week 1</div>
+          <div className="col-span-2 border-l border-zinc-200 dark:border-zinc-850">Week 2</div>
+          <div className="col-span-2 border-l border-zinc-200 dark:border-zinc-850">Week 3</div>
+          <div className="col-span-2 border-l border-zinc-200 dark:border-zinc-850">Week 4</div>
         </div>
 
         {/* Rows */}
@@ -129,7 +129,7 @@ export default function TimelineView({
                   onMouseLeave={() => setHoveredTaskId(null)}
                   className={`grid grid-cols-12 items-center py-3.5 transition-all relative ${
                     isHovered
-                      ? 'bg-zinc-900/30'
+                      ? 'bg-zinc-50 dark:bg-zinc-900/30'
                       : isPredecessorOfHovered
                       ? 'bg-indigo-950/10'
                       : isSuccessorOfHovered
@@ -189,7 +189,7 @@ export default function TimelineView({
 
       {/* Dependency Tip Footer */}
       {hoveredTaskId && (
-        <div className="bg-zinc-950/60 border border-zinc-800 p-4 rounded-xl flex items-center gap-2.5 text-[10px] text-zinc-400 animate-fade-in">
+        <div className="bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl flex items-center gap-2.5 text-[10px] text-zinc-600 dark:text-zinc-400 animate-fade-in">
           <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
           <span>
             Hovering <strong>"{tasks.find(t => t.id === hoveredTaskId)?.title}"</strong>.{' '}

@@ -64,11 +64,11 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-100 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 p-4 relative overflow-hidden">
       {/* Background Neon Gradients */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(#18181b_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)] opacity-40 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(#d4d4d8_1px,transparent_1px)] dark:bg-[radial-gradient(#18181b_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)] opacity-40 pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
         {/* Header Logo */}
@@ -77,15 +77,15 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
             <Sparkles className="w-3.5 h-3.5" /> AI-Powered Project Management
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-            Antigravity Task Assistant
+            Clutch AI
           </h1>
-          <p className="text-sm text-zinc-400 mt-2">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
             Unstructured requirements to action items in seconds
           </p>
         </div>
 
         {/* Card Panel */}
-        <div className="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/80 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+        <div className="bg-white/90 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
           {tokenInfo ? (
             /* JWT Token Success Animation */
             <div className="flex flex-col items-center justify-center py-8 text-center animate-fade-in">
@@ -93,28 +93,28 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                 <Key className="w-6 h-6 animate-bounce" />
               </div>
               <h2 className="text-xl font-semibold text-emerald-400 mb-1">JWT Tokens Generated</h2>
-              <p className="text-xs text-zinc-400 mb-6">Simulating secure access/refresh token handshake...</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-6">Simulating secure access/refresh token handshake...</p>
 
-              <div className="w-full text-left space-y-3 bg-zinc-950/80 border border-zinc-800 p-4 rounded-xl font-mono text-[10px] break-all text-zinc-500">
+              <div className="w-full text-left space-y-3 bg-white dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl font-mono text-[10px] break-all text-zinc-500 dark:text-zinc-500">
                 <div>
                   <span className="text-emerald-500 font-semibold">ACCESS_TOKEN:</span>
-                  <div className="text-zinc-400 select-all mt-1 truncate">{tokenInfo.accessToken}</div>
+                  <div className="text-zinc-600 dark:text-zinc-400 select-all mt-1 truncate">{tokenInfo.accessToken}</div>
                 </div>
-                <div className="border-t border-zinc-800/80 pt-2">
+                <div className="border-t border-zinc-200 dark:border-zinc-800/80 pt-2">
                   <span className="text-violet-400 font-semibold">REFRESH_TOKEN:</span>
-                  <div className="text-zinc-400 select-all mt-1 truncate">{tokenInfo.refreshToken}</div>
+                  <div className="text-zinc-600 dark:text-zinc-400 select-all mt-1 truncate">{tokenInfo.refreshToken}</div>
                 </div>
               </div>
             </div>
           ) : (
             /* Auth Form */
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex border-b border-zinc-800 pb-1 mb-4">
+              <div className="flex border-b border-zinc-200 dark:border-zinc-800 pb-1 mb-4">
                 <button
                   type="button"
                   onClick={() => { setIsLogin(true); setTokenInfo(null); }}
                   className={`flex-1 pb-2.5 text-sm font-semibold border-b-2 transition-all ${
-                    isLogin ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                    isLogin ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'
                   }`}
                 >
                   Sign In
@@ -123,7 +123,7 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                   type="button"
                   onClick={() => { setIsLogin(false); setTokenInfo(null); }}
                   className={`flex-1 pb-2.5 text-sm font-semibold border-b-2 transition-all ${
-                    !isLogin ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                    !isLogin ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'
                   }`}
                 >
                   Create Account
@@ -138,15 +138,15 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
 
               {!isLogin && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-400">Full Name</label>
+                  <label className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Full Name</label>
                   <div className="relative">
-                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-zinc-500" />
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Alex Developer"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-200"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-800 dark:text-zinc-200"
                       required
                     />
                   </div>
@@ -154,36 +154,36 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
               )}
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-400">Email Address</label>
+                <label className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-zinc-500" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="alex@example.com"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-200"
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-800 dark:text-zinc-200"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-400">Password</label>
+                <label className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-zinc-500" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 pl-9 pr-10 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-200"
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2 pl-9 pr-10 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-800 dark:text-zinc-200"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -210,18 +210,18 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
 
         {/* Demo Accounts Switcher */}
         {!tokenInfo && (
-          <div className="mt-6 bg-zinc-900/40 border border-zinc-850 p-4 rounded-xl text-center">
-            <p className="text-xs text-zinc-400 font-semibold mb-2">Or quick-login as a demo team member:</p>
+          <div className="mt-6 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-850 p-4 rounded-xl text-center">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold mb-2">Or quick-login as a demo team member:</p>
             <div className="grid grid-cols-3 gap-2">
               {mockUsers.map((u) => (
                 <button
                   key={u.id}
                   type="button"
                   onClick={() => handleSelectMockUser(u)}
-                  className="flex flex-col items-center p-2 rounded-lg bg-zinc-950/50 border border-zinc-800 hover:border-indigo-500/50 hover:bg-zinc-900/50 transition-all text-[10px]"
+                  className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-zinc-50 dark:bg-zinc-900/50 transition-all text-[10px]"
                 >
-                  <img src={u.avatarUrl} alt={u.name} className="w-7 h-7 rounded-full border border-zinc-700 mb-1" />
-                  <span className="font-semibold text-zinc-300 truncate w-full">{u.name.split(' ')[0]}</span>
+                  <img src={u.avatarUrl} alt={u.name} className="w-7 h-7 rounded-full border border-zinc-300 dark:border-zinc-700 mb-1" />
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 truncate w-full">{u.name.split(' ')[0]}</span>
                   <span className="text-[8px] text-indigo-400 capitalize">{u.id === 'user-pm' ? 'Lead' : 'Dev'}</span>
                 </button>
               ))}

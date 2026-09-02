@@ -140,14 +140,14 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Left Column: Requirements Input */}
       <div className="lg:col-span-2 space-y-4">
-        <div className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-2xl space-y-4">
+        <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl space-y-4">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-200">AI Requirement Planner</h2>
-              <p className="text-[10px] text-zinc-500">Provide unstructured specs or upload PDFs/Images</p>
+              <h2 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">AI Requirement Planner</h2>
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-500">Provide unstructured specs or upload PDFs/Images</p>
             </div>
           </div>
 
@@ -157,7 +157,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe your application requirements... (e.g. 'I need to build an online examination system.')"
-                className="w-full h-44 bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 pb-12 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 leading-relaxed resize-none"
+                className="w-full h-44 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3.5 pb-12 text-xs text-zinc-700 dark:text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 leading-relaxed resize-none"
                 disabled={isGenerating || isImporting}
               />
               
@@ -167,7 +167,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isGenerating || isImporting}
-                  className="p-1.5 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
+                  className="p-1.5 text-zinc-500 dark:text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
                   title="Attach PDFs or Screenshots"
                 >
                   <Paperclip className="w-4 h-4" />
@@ -196,13 +196,13 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
             {files.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-2">
                 {files.map((f, idx) => (
-                  <div key={idx} className="flex items-center gap-1.5 bg-zinc-800/50 border border-zinc-700 px-2 py-1 rounded-md text-[10px] text-zinc-300">
+                  <div key={idx} className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 px-2 py-1 rounded-md text-[10px] text-zinc-700 dark:text-zinc-300">
                     <span className="truncate max-w-[120px]">{f.name}</span>
                     <button
                       type="button"
                       onClick={() => removeFile(idx)}
                       disabled={isGenerating || isImporting}
-                      className="text-zinc-500 hover:text-red-400"
+                      className="text-zinc-500 dark:text-zinc-500 hover:text-red-400"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -222,7 +222,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
 
       {/* Right Column: Execution Output */}
       <div className="lg:col-span-3">
-        <div className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-2xl h-full flex flex-col min-h-[400px] justify-between relative overflow-hidden">
+        <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl h-full flex flex-col min-h-[400px] justify-between relative overflow-hidden">
           {/* Background grid */}
           <div className="absolute inset-0 bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
@@ -238,7 +238,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
               </div>
 
               <div className="space-y-4 w-full max-w-sm">
-                <h3 className="text-center font-bold text-sm text-zinc-200">AI Plan Orchestrator</h3>
+                <h3 className="text-center font-bold text-sm text-zinc-800 dark:text-zinc-200">AI Plan Orchestrator</h3>
                 <div className="space-y-2.5">
                   {steps.map((step, idx) => {
                     const StepIcon = step.icon;
@@ -262,7 +262,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                             ? 'bg-emerald-500/10 border-emerald-500/20'
                             : state === 'active'
                             ? 'bg-indigo-500/10 border-indigo-500/20 animate-pulse'
-                            : 'bg-zinc-950 border-zinc-800'
+                            : 'bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800'
                         }`}>
                           <StepIcon className="w-3.5 h-3.5" />
                         </div>
@@ -292,39 +292,39 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-lg font-bold text-zinc-100">{generatedPlan.projectName}</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">{generatedPlan.projectDescription}</p>
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{generatedPlan.projectName}</h3>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{generatedPlan.projectDescription}</p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 border-y border-zinc-800/80 py-4">
+                <div className="grid grid-cols-3 gap-2 border-y border-zinc-200 dark:border-zinc-800/80 py-4">
                   <div className="text-center space-y-0.5">
-                    <span className="text-[10px] text-zinc-500 block">Total Epics</span>
-                    <span className="text-sm font-bold text-zinc-300">{generatedPlan.epics.length}</span>
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-500 block">Total Epics</span>
+                    <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{generatedPlan.epics.length}</span>
                   </div>
-                  <div className="text-center space-y-0.5 border-x border-zinc-800/80">
-                    <span className="text-[10px] text-zinc-500 block">Task Breakdown</span>
-                    <span className="text-sm font-bold text-zinc-300">{totalTasks} items</span>
+                  <div className="text-center space-y-0.5 border-x border-zinc-200 dark:border-zinc-800/80">
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-500 block">Task Breakdown</span>
+                    <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{totalTasks} items</span>
                   </div>
                   <div className="text-center space-y-0.5">
-                    <span className="text-[10px] text-zinc-500 block">Total Effort</span>
-                    <span className="text-sm font-bold text-zinc-300">
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-500 block">Total Effort</span>
+                    <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">
                       {totalEffort} hours
                     </span>
                   </div>
                 </div>
 
                 {/* Tabbed Navigation */}
-                <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
-                  <button onClick={() => setActiveTab('epics')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'epics' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+                  <button onClick={() => setActiveTab('epics')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'epics' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'}`}>
                     <Layers className="w-3 h-3" /> Epics & Tasks
                   </button>
-                  <button onClick={() => setActiveTab('architecture')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'architecture' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                  <button onClick={() => setActiveTab('architecture')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'architecture' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'}`}>
                     <GitBranch className="w-3 h-3" /> Architecture
                   </button>
-                  <button onClick={() => setActiveTab('database')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'database' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                  <button onClick={() => setActiveTab('database')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'database' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'}`}>
                     <Database className="w-3 h-3" /> Database
                   </button>
-                  <button onClick={() => setActiveTab('api')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'api' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                  <button onClick={() => setActiveTab('api')} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'api' ? 'bg-indigo-500/20 text-indigo-400' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'}`}>
                     <Network className="w-3 h-3" /> API Routes
                   </button>
                 </div>
@@ -334,22 +334,22 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                   {activeTab === 'epics' && (
                     <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                       {generatedPlan.epics.map((epic, eIdx) => (
-                        <div key={eIdx} className="bg-zinc-900/50 border border-zinc-800 p-3 rounded-xl space-y-2">
-                          <div className="border-b border-zinc-800 pb-2">
-                            <span className="text-xs font-bold text-zinc-200 block">{epic.title}</span>
-                            <span className="text-[10px] text-zinc-500 leading-normal">{epic.description}</span>
+                        <div key={eIdx} className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-3 rounded-xl space-y-2">
+                          <div className="border-b border-zinc-200 dark:border-zinc-800 pb-2">
+                            <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 block">{epic.title}</span>
+                            <span className="text-[10px] text-zinc-500 dark:text-zinc-500 leading-normal">{epic.description}</span>
                           </div>
                           <div className="space-y-2">
                             {epic.tasks.map((task, tIdx) => (
-                              <div key={tIdx} className="bg-zinc-950 border border-zinc-800/80 p-2 rounded-lg">
+                              <div key={tIdx} className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 p-2 rounded-lg">
                                 <div className="flex justify-between items-start">
-                                  <span className="text-[10px] font-semibold text-zinc-300">{task.title}</span>
-                                  <span className="text-[8px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">{task.estimatedHours}h</span>
+                                  <span className="text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">{task.title}</span>
+                                  <span className="text-[8px] px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">{task.estimatedHours}h</span>
                                 </div>
                                 {task.subtasks && task.subtasks.length > 0 && (
                                   <div className="mt-1.5 pl-2 border-l border-indigo-500/30 space-y-1">
                                     {task.subtasks.map((sub, sIdx) => (
-                                      <div key={sIdx} className="text-[9px] text-zinc-500 flex gap-1 items-center">
+                                      <div key={sIdx} className="text-[9px] text-zinc-500 dark:text-zinc-500 flex gap-1 items-center">
                                         <span className="w-1 h-1 rounded-full bg-zinc-700 shrink-0" />
                                         <span className="truncate">{sub.title}</span>
                                       </div>
@@ -365,7 +365,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                   )}
 
                   {activeTab === 'architecture' && generatedPlan.architectureDiagram && (
-                    <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl max-h-64 overflow-auto flex justify-center custom-scrollbar">
+                    <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl max-h-64 overflow-auto flex justify-center custom-scrollbar">
                       <pre className="mermaid text-[10px]">{generatedPlan.architectureDiagram}</pre>
                     </div>
                   )}
@@ -373,14 +373,14 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                   {activeTab === 'database' && generatedPlan.databaseSchema && (
                     <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                       {generatedPlan.databaseSchema.map((table, idx) => (
-                        <div key={idx} className="bg-zinc-950 border border-zinc-800 rounded-xl p-3 space-y-2">
-                          <div className="flex items-center gap-1.5 pb-2 border-b border-zinc-850">
+                        <div key={idx} className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 space-y-2">
+                          <div className="flex items-center gap-1.5 pb-2 border-b border-zinc-200 dark:border-zinc-850">
                             <Database className="w-3 h-3 text-indigo-400" />
-                            <span className="text-xs font-bold text-zinc-200">{table.tableName}</span>
+                            <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{table.tableName}</span>
                           </div>
                           <div className="space-y-1">
                             {table.columns.map((col, cIdx) => (
-                              <div key={cIdx} className="text-[9px] text-zinc-400 font-mono">{col}</div>
+                              <div key={cIdx} className="text-[9px] text-zinc-600 dark:text-zinc-400 font-mono">{col}</div>
                             ))}
                           </div>
                         </div>
@@ -391,13 +391,13 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                   {activeTab === 'api' && generatedPlan.apiEndpoints && (
                     <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                       {generatedPlan.apiEndpoints.map((api, idx) => (
-                        <div key={idx} className="bg-zinc-950 border border-zinc-800 p-2.5 rounded-lg flex items-start gap-3">
+                        <div key={idx} className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-lg flex items-start gap-3">
                           <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${api.method === 'GET' ? 'bg-blue-500/10 text-blue-400' : api.method === 'POST' ? 'bg-emerald-500/10 text-emerald-400' : api.method === 'PUT' ? 'bg-amber-500/10 text-amber-400' : 'bg-red-500/10 text-red-400'}`}>
                             {api.method}
                           </span>
                           <div>
-                            <span className="text-[10px] font-mono text-zinc-300 block mb-0.5">{api.path}</span>
-                            <span className="text-[9px] text-zinc-500 leading-normal">{api.purpose}</span>
+                            <span className="text-[10px] font-mono text-zinc-700 dark:text-zinc-300 block mb-0.5">{api.path}</span>
+                            <span className="text-[9px] text-zinc-500 dark:text-zinc-500 leading-normal">{api.purpose}</span>
                           </div>
                         </div>
                       ))}
@@ -416,13 +416,13 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
             </div>
           ) : (
             /* Empty State */
-            <div className="flex-1 flex flex-col justify-center items-center py-8 text-center text-zinc-500 space-y-3">
-              <div className="p-4 bg-zinc-950 border border-zinc-850 rounded-2xl text-zinc-400">
+            <div className="flex-1 flex flex-col justify-center items-center py-8 text-center text-zinc-500 dark:text-zinc-500 space-y-3">
+              <div className="p-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-2xl text-zinc-600 dark:text-zinc-400">
                 <Terminal className="w-8 h-8 opacity-60" />
               </div>
               <div>
-                <h3 className="font-semibold text-xs text-zinc-400">Plan Visualizer</h3>
-                <p className="text-[10px] text-zinc-500 max-w-xs mt-1 leading-normal">
+                <h3 className="font-semibold text-xs text-zinc-600 dark:text-zinc-400">Plan Visualizer</h3>
+                <p className="text-[10px] text-zinc-500 dark:text-zinc-500 max-w-xs mt-1 leading-normal">
                   Upload PDF requirements, screenshots, or type your idea. The AI will stream the generated project plan here.
                 </p>
               </div>

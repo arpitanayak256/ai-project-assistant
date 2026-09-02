@@ -22,6 +22,7 @@ import TimelineView from './components/TimelineView';
 import ChatView from './components/ChatView';
 import HealthView from './components/HealthView';
 import TaskModal from './components/TaskModal';
+import { ThemeToggle } from './components/ThemeToggle';
 
 // Icons
 import {
@@ -353,28 +354,28 @@ export default function Home() {
   const projectHealth = activeProject ? getProjectHealth(activeProject.id) : null;
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-zinc-100 font-sans overflow-hidden">
+    <div className="flex h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans overflow-hidden">
       {/* Sidebar Navigation */}
-      <aside className="w-64 bg-zinc-900/80 border-r border-zinc-800/80 flex flex-col justify-between shrink-0 relative z-20">
+      <aside className="w-64 bg-zinc-50 dark:bg-zinc-900/80 border-r border-zinc-200 dark:border-zinc-800/80 flex flex-col justify-between shrink-0 relative z-20">
         <div className="flex-1 flex flex-col min-h-0 pt-5">
           {/* Logo Brand */}
-          <div className="px-5 pb-5 border-b border-zinc-800/60 flex items-center gap-2">
+          <div className="px-5 pb-5 border-b border-zinc-200 dark:border-zinc-800/60 flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-extrabold text-sm shadow-md shadow-indigo-600/10">
-              A
+              C
             </div>
             <div>
-              <span className="font-extrabold tracking-tight bg-gradient-to-r from-indigo-300 via-violet-300 to-purple-300 bg-clip-text text-transparent block text-sm">
-                Antigravity AI
+              <span className="font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 dark:from-indigo-300 dark:via-violet-300 dark:to-purple-300 bg-clip-text text-transparent block text-sm">
+                Clutch AI
               </span>
-              <span className="text-[9px] text-zinc-500 font-semibold block uppercase tracking-wider">
+              <span className="text-[9px] text-zinc-500 dark:text-zinc-500 font-semibold block uppercase tracking-wider">
                 Project Assistant
               </span>
             </div>
           </div>
 
           {/* Active Workspace Selector */}
-          <div className="px-4 py-4 border-b border-zinc-850">
-            <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block px-1.5 mb-1.5">
+          <div className="px-4 py-4 border-b border-zinc-200 dark:border-zinc-850">
+            <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-wider block px-1.5 mb-1.5">
               Active Project Workspace
             </span>
             <div className="relative">
@@ -382,7 +383,7 @@ export default function Home() {
               <select
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800/80 rounded-xl py-2 pl-9 pr-4 text-xs font-semibold text-zinc-300 focus:outline-none focus:border-indigo-500 cursor-pointer appearance-none"
+                className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-xl py-2 pl-9 pr-4 text-xs font-semibold text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500 cursor-pointer appearance-none"
               >
                 {projects.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -416,7 +417,7 @@ export default function Home() {
                       ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/10'
                       : link.highlight
                       ? 'text-indigo-400 bg-indigo-500/5 border border-indigo-500/10 hover:bg-indigo-500/10'
-                      : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-zinc-900 hover:text-zinc-800 dark:text-zinc-200'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -443,16 +444,16 @@ export default function Home() {
         </div>
 
         {/* User Card & Sign Out */}
-        <div className="p-4 border-t border-zinc-800/60 bg-zinc-950/20 shrink-0">
-          <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-zinc-950/40 border border-zinc-850">
+        <div className="p-4 border-t border-zinc-200 dark:border-zinc-800/60 bg-white dark:bg-zinc-950/20 shrink-0">
+          <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-850">
             <div className="flex items-center gap-2 min-w-0">
               <img
                 src={currentUser.avatarUrl}
                 alt={currentUser.name}
-                className="w-8 h-8 rounded-full border border-zinc-850 shrink-0"
+                className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-850 shrink-0"
               />
               <div className="min-w-0">
-                <span className="block text-[11px] font-bold text-zinc-300 truncate">
+                <span className="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 truncate">
                   {currentUser.name}
                 </span>
               </div>
@@ -460,7 +461,7 @@ export default function Home() {
             <button
               onClick={handleLogout}
               title="Sign Out"
-              className="p-1.5 hover:bg-zinc-900 text-zinc-500 hover:text-red-400 rounded-lg transition-colors shrink-0"
+              className="p-1.5 hover:bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-500 hover:text-red-400 rounded-lg transition-colors shrink-0"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -469,18 +470,18 @@ export default function Home() {
       </aside>
 
       {/* Main Workspace Frame */}
-      <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-zinc-950">
+      <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-white dark:bg-zinc-950">
         {/* Top bar header */}
-        <header className="h-14 border-b border-zinc-900 bg-zinc-950/40 flex items-center justify-between px-6 shrink-0 relative z-10">
+        <header className="h-14 border-b border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950/40 flex items-center justify-between px-6 shrink-0 relative z-10">
           {/* Breadcrumb path */}
-          <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-semibold select-none">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-500 font-semibold select-none">
             <span>Workspace</span>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-zinc-400 font-bold truncate max-w-[150px]">
+            <span className="text-zinc-600 dark:text-zinc-400 font-bold truncate max-w-[150px]">
               {activeProject ? activeProject.name : 'Selection'}
             </span>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-zinc-200 capitalize font-bold">{currentView}</span>
+            <span className="text-zinc-800 dark:text-zinc-200 capitalize font-bold">{currentView}</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -490,6 +491,7 @@ export default function Home() {
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" /> Sprints Active
               </span>
             )}
+            <ThemeToggle />
           </div>
         </header>
 
