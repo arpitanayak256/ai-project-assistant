@@ -2,18 +2,42 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Terminal, FileText, Send, Layers, GitFork, ArrowRight, Play, Paperclip, X } from 'lucide-react';
-import { GenerationResult } from '../mockInitialData';
 
-interface PlannerViewProps {
-  onGenerateProject: (generation: GenerationResult) => void;
+export interface GeneratedSubtask {
+  title: string;
+}
+export interface GeneratedTask {
+  tempId: string;
+  title: string;
+  description: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  estimatedHours: number;
+  subtasks: GeneratedSubtask[];
+  dependsOnTempIds?: string[];
+  aiExplanation?: string;
+}
+export interface GeneratedEpic {
+  title: string;
+  description: string;
+  tasks: GeneratedTask[];
+}
+export interface GeneratedProjectPlan {
+  projectName: string;
+  projectDescription: string;
+  epics: GeneratedEpic[];
 }
 
-export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
+interface PlannerViewProps {
+  onProjectImported: () => void;
+}
+
+export default function PlannerView({ onProjectImported }: PlannerViewProps) {
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
-  const [generatedPlan, setGeneratedPlan] = useState<GenerationResult | null>(null);
+  const [generatedPlan, setGeneratedPlan] = useState<GeneratedProjectPlan | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -79,6 +103,30 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
     }
   };
 
+  const handleImport = async () => {
+    if (!generatedPlan) return;
+    setIsImporting(true);
+    try {
+      const response = await fetch('http://localhost:3001/projects/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(generatedPlan),
+      });
+      if (!response.ok) throw new Error('Failed to import project');
+      onProjectImported();
+    } catch (error: any) {
+      setErrorMsg(error.message || 'Import failed');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const totalTasks = generatedPlan?.epics.reduce((sum, e) => sum + e.tasks.length, 0) || 0;
+  const totalEffort = generatedPlan?.epics.reduce(
+    (sum, e) => sum + e.tasks.reduce((s, t) => s + t.estimatedHours, 0),
+    0
+  ) || 0;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Left Column: Requirements Input */}
@@ -101,7 +149,7 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe your application requirements... (e.g. 'I need to build an online examination system.')"
                 className="w-full h-44 bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 pb-12 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 leading-relaxed resize-none"
-                disabled={isGenerating}
+                disabled={isGenerating || isImporting}
               />
               
               {/* File Upload Trigger */}
@@ -109,7 +157,7 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isGenerating}
+                  disabled={isGenerating || isImporting}
                   className="p-1.5 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
                   title="Attach PDFs or Screenshots"
                 >
@@ -128,7 +176,7 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isGenerating || (!prompt.trim() && files.length === 0)}
+                disabled={isGenerating || isImporting || (!prompt.trim() && files.length === 0)}
                 className="absolute right-3 bottom-3 p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
@@ -144,7 +192,7 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
                     <button
                       type="button"
                       onClick={() => removeFile(idx)}
-                      disabled={isGenerating}
+                      disabled={isGenerating || isImporting}
                       className="text-zinc-500 hover:text-red-400"
                     >
                       <X className="w-3 h-3" />
@@ -235,8 +283,8 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-lg font-bold text-zinc-100">{generatedPlan.project.name}</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">{generatedPlan.project.description}</p>
+                  <h3 className="text-lg font-bold text-zinc-100">{generatedPlan.projectName}</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">{generatedPlan.projectDescription}</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 border-y border-zinc-800/80 py-4">
@@ -246,24 +294,46 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
                   </div>
                   <div className="text-center space-y-0.5 border-x border-zinc-800/80">
                     <span className="text-[10px] text-zinc-500 block">Task Breakdown</span>
-                    <span className="text-sm font-bold text-zinc-300">{generatedPlan.tasks.length} items</span>
+                    <span className="text-sm font-bold text-zinc-300">{totalTasks} items</span>
                   </div>
                   <div className="text-center space-y-0.5">
                     <span className="text-[10px] text-zinc-500 block">Total Effort</span>
                     <span className="text-sm font-bold text-zinc-300">
-                      {generatedPlan.tasks.reduce((sum, t) => sum + t.estimatedHours, 0)} hours
+                      {totalEffort} hours
                     </span>
                   </div>
                 </div>
 
                 {/* Preview of Epics */}
                 <div className="space-y-2">
-                  <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block">Target Epics Generated:</span>
-                  <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
-                    {generatedPlan.epics.map((epic, idx) => (
-                      <div key={idx} className="bg-zinc-950/60 border border-zinc-800 p-2.5 rounded-xl space-y-1">
-                        <span className="text-[10px] font-bold text-zinc-300 truncate block">{epic.title}</span>
-                        <span className="text-[9px] text-zinc-500 line-clamp-2 leading-normal">{epic.description}</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider block">Detailed Execution Plan:</span>
+                  <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                    {generatedPlan.epics.map((epic, eIdx) => (
+                      <div key={eIdx} className="bg-zinc-900/50 border border-zinc-800 p-3 rounded-xl space-y-2">
+                        <div className="border-b border-zinc-800 pb-2">
+                          <span className="text-xs font-bold text-zinc-200 block">{epic.title}</span>
+                          <span className="text-[10px] text-zinc-500 leading-normal">{epic.description}</span>
+                        </div>
+                        <div className="space-y-2">
+                          {epic.tasks.map((task, tIdx) => (
+                            <div key={tIdx} className="bg-zinc-950 border border-zinc-800/80 p-2 rounded-lg">
+                              <div className="flex justify-between items-start">
+                                <span className="text-[10px] font-semibold text-zinc-300">{task.title}</span>
+                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">{task.estimatedHours}h</span>
+                              </div>
+                              {task.subtasks && task.subtasks.length > 0 && (
+                                <div className="mt-1.5 pl-2 border-l border-indigo-500/30 space-y-1">
+                                  {task.subtasks.map((sub, sIdx) => (
+                                    <div key={sIdx} className="text-[9px] text-zinc-500 flex gap-1 items-center">
+                                      <span className="w-1 h-1 rounded-full bg-zinc-700 shrink-0" />
+                                      <span className="truncate">{sub.title}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -271,10 +341,11 @@ export default function PlannerView({ onGenerateProject }: PlannerViewProps) {
               </div>
 
               <button
-                onClick={() => onGenerateProject(generatedPlan)}
-                className="w-full mt-6 bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white font-semibold rounded-xl py-2.5 text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                onClick={handleImport}
+                disabled={isImporting}
+                className="w-full mt-6 bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white font-semibold rounded-xl py-2.5 text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] disabled:opacity-50"
               >
-                Assemble Project Workspace <ArrowRight className="w-3.5 h-3.5" />
+                {isImporting ? 'Importing...' : 'Confirm & Import to PostgreSQL'} <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           ) : (

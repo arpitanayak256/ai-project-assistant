@@ -53,30 +53,30 @@ export default function Home() {
 
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/projects/full');
+      if (response.ok) {
+        const data = await response.json();
+        const { projects, dependencies } = data;
+        
+        setProjects(projects.map((p: any) => ({ ...p, status: p.status as any })));
+        
+        const allEpics = projects.flatMap((p: any) => p.epics);
+        setEpics(allEpics);
+        
+        const allTasks = projects.flatMap((p: any) => p.tasks);
+        setTasks(allTasks);
+        
+        setDependencies(dependencies);
+      }
+    } catch (error) {
+      console.error('Failed to fetch projects from backend:', error);
+    }
+  };
+
   // Fetch projects from PostgreSQL Backend
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch('http://localhost:3001/projects/full');
-        if (response.ok) {
-          const data = await response.json();
-          const { projects, dependencies } = data;
-          
-          setProjects(projects.map((p: any) => ({ ...p, status: p.status as any })));
-          
-          const allEpics = projects.flatMap((p: any) => p.epics);
-          setEpics(allEpics);
-          
-          const allTasks = projects.flatMap((p: any) => p.tasks);
-          setTasks(allTasks);
-          
-          setDependencies(dependencies);
-        }
-      } catch (error) {
-        console.error('Failed to fetch projects from backend:', error);
-      }
-    };
-
     fetchProjects();
 
     // Auth Check
@@ -340,63 +340,9 @@ export default function Home() {
   };
 
   // AI project generator handler
-  const handleGenerateProject = (generated: GenerationResult) => {
-    const newProjId = 'project-gen-' + Date.now();
-    const newProj: Project = {
-      id: newProjId,
-      name: generated.project.name,
-      description: generated.project.description,
-      deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      status: generated.project.status,
-      ownerId: 'user-pm',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const newEpicsList: Epic[] = generated.epics.map((e, idx) => ({
-      id: `epic-gen-${newProjId}-${idx}`,
-      projectId: newProjId,
-      title: e.title,
-      description: e.description,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
-
-    // Tasks need mapping
-    const newTasksList: Task[] = generated.tasks.map((t, idx) => ({
-      id: `task-gen-${newProjId}-${idx}`,
-      projectId: newProjId,
-      epicId: newEpicsList[t.epicIndex].id,
-      title: t.title,
-      description: t.description,
-      status: t.status as TaskStatus,
-      priority: t.priority as any,
-      estimatedHours: t.estimatedHours,
-      dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      assigneeId: idx % 2 === 0 ? 'user-current' : 'user-co-dev', // distribute
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      aiExplanation: t.aiExplanation,
-    }));
-
-    // Dependencies mapping
-    const newDepsList: TaskDependency[] = generated.dependencies.map((d, idx) => ({
-      id: `dep-gen-${newProjId}-${idx}`,
-      taskId: newTasksList[d.taskIndex].id,
-      dependsOnTaskId: newTasksList[d.dependsOnTaskIndex].id,
-    }));
-
-    // In a real application, you would re-fetch the projects from the backend here.
-    // For now, we simulate adding the newly generated objects to the local state, 
-    // but when the page refreshes, they will be pulled straight from the PostgreSQL database!
-    
-    setProjects((prev) => [...prev, newProj]);
-    setEpics((prev) => [...prev, ...newEpicsList]);
-    setTasks((prev) => [...prev, ...newTasksList]);
-    setDependencies((prev) => [...prev, ...newDepsList]);
-
-    setSelectedProjectId(newProjId);
-    setCurrentView('board');
+  const handleProjectImported = async () => {
+    await fetchProjects();
+    setCurrentView('dashboard');
   };
 
   // If not logged in, render the login flow page
@@ -569,7 +515,7 @@ export default function Home() {
             />
           )}
 
-          {currentView === 'planner' && <PlannerView onGenerateProject={handleGenerateProject} />}
+          {currentView === 'planner' && <PlannerView onProjectImported={handleProjectImported} />}
 
           {currentView === 'board' && activeProject && (
             <BoardView
