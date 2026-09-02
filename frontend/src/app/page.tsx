@@ -455,9 +455,6 @@ export default function Home() {
                 <span className="block text-[11px] font-bold text-zinc-300 truncate">
                   {currentUser.name}
                 </span>
-                <span className="block text-[8px] text-zinc-550 font-semibold uppercase mt-0.5">
-                  Role: Owner
-                </span>
               </div>
             </div>
             <button

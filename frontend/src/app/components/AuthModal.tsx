@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { LogIn, UserPlus, Key, Mail, User as UserIcon, Lock, Sparkles, ArrowRight } from 'lucide-react';
+import { LogIn, UserPlus, Key, Mail, User as UserIcon, Lock, Sparkles, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { User } from '../types';
 import { mockUsers } from '../mockInitialData';
 
@@ -13,59 +13,47 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('alex@example.com');
   const [password, setPassword] = useState('password123');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [tokenInfo, setTokenInfo] = useState<{ accessToken: string; refreshToken: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
-    // Simulate API request to JWT auth
-    setTimeout(() => {
-      setLoading(false);
-      if (isLogin) {
-        // Find existing user or default to Alex
-        const user = mockUsers.find(u => u.email === email) || {
-          id: 'user-custom-' + Date.now(),
-          name: email.split('@')[0].toUpperCase(),
-          email: email,
-          avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-          createdAt: new Date().toISOString(),
-        };
+    try {
+      const endpoint = isLogin ? 'http://localhost:3001/auth/login' : 'http://localhost:3001/auth/register';
+      const body = isLogin ? { email, password } : { email, password, name: name || 'New User' };
 
-        // Simulate JWT response payload
-        const simulatedToken = {
-          accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI' + user.id + 'IiwiaWF0IjoxNTE2MjM5MDIyfQ',
-          refreshToken: 'refresh_token_rot_jwt_' + Math.random().toString(36).substring(2),
-        };
-        setTokenInfo(simulatedToken);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-        // Complete login after a brief token display
-        setTimeout(() => {
-          onLogin(user);
-        }, 1200);
-      } else {
-        // Register new user
-        const newUser: User = {
-          id: 'user-custom-' + Date.now(),
-          name: name || 'New User',
-          email: email,
-          avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-          createdAt: new Date().toISOString(),
-        };
-
-        const simulatedToken = {
-          accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI' + newUser.id + 'IiwiaWF0IjoxNTE2MjM5MDIyfQ',
-          refreshToken: 'refresh_token_rot_jwt_' + Math.random().toString(36).substring(2),
-        };
-        setTokenInfo(simulatedToken);
-
-        setTimeout(() => {
-          onLogin(newUser);
-        }, 1200);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Authentication failed');
       }
-    }, 1500);
+
+      const data = await response.json();
+      
+      setTokenInfo({
+        accessToken: data.access_token,
+        refreshToken: 'refresh_token_rot_jwt_' + Math.random().toString(36).substring(2),
+      });
+
+      setTimeout(() => {
+        onLogin(data.user);
+      }, 1200);
+    } catch (err: any) {
+      setError(err.message || 'Network error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSelectMockUser = (mockUser: User) => {
@@ -142,6 +130,12 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                 </button>
               </div>
 
+              {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-400 text-center font-semibold">
+                  {error}
+                </div>
+              )}
+
               {!isLogin && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-zinc-400">Full Name</label>
@@ -179,13 +173,20 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-200"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 pl-9 pr-10 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-zinc-200"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
