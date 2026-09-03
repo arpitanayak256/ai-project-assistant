@@ -4,29 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Terminal, FileText, Send, Layers, GitFork, ArrowRight, Play, Paperclip, X, Database, Network, GitBranch } from 'lucide-react';
 import mermaid from 'mermaid';
 
-export interface GeneratedSubtask {
-  title: string;
-}
-export interface GeneratedTask {
-  tempId: string;
-  title: string;
-  description: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  estimatedHours: number;
-  subtasks: GeneratedSubtask[];
-  dependsOnTempIds?: string[];
-  aiExplanation?: string;
-}
-export interface GeneratedEpic {
-  title: string;
-  description: string;
-  tasks: GeneratedTask[];
-}
-export interface GeneratedProjectPlan {
-  projectName: string;
-  projectDescription: string;
-  epics: GeneratedEpic[];
-}
+import { GeneratedProjectPlan, GeneratedEpic, GeneratedTask, GeneratedSubtask } from '../../hooks/useAiPlanner';
 
 interface PlannerViewProps {
   onProjectImported: () => void;
@@ -380,7 +358,9 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
                           </div>
                           <div className="space-y-1">
                             {table.columns.map((col, cIdx) => (
-                              <div key={cIdx} className="text-[9px] text-zinc-600 dark:text-zinc-400 font-mono">{col}</div>
+                              <div key={cIdx} className="text-[9px] text-zinc-600 dark:text-zinc-400 font-mono">
+                                {typeof col === 'string' ? col : `${col.name}: ${col.type}`}
+                              </div>
                             ))}
                           </div>
                         </div>
