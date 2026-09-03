@@ -3,8 +3,6 @@
 import React, { useState } from 'react';
 import { LogIn, UserPlus, Key, Mail, User as UserIcon, Lock, Sparkles, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { User } from '../types';
-import { mockUsers } from '../mockInitialData';
-
 import { useAuth } from '../../hooks/useAuth';
 
 interface AuthModalProps {
@@ -43,13 +41,6 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
     } catch (err: any) {
       setCustomError(err.message || 'Authentication failed');
     }
-  };
-
-  const handleSelectMockUser = (mockUser: User) => {
-    setEmail(mockUser.email);
-    setName(mockUser.name);
-    setPassword('password123');
-    setIsLogin(true);
   };
 
   return (
@@ -101,7 +92,7 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
               <div className="flex border-b border-zinc-200 dark:border-zinc-800 pb-1 mb-4">
                 <button
                   type="button"
-                  onClick={() => { setIsLogin(true); setTokenInfo(null); }}
+                  onClick={() => { setIsLogin(true); setTokenInfo(null); setCustomError(''); }}
                   className={`flex-1 pb-2.5 text-sm font-semibold border-b-2 transition-all ${
                     isLogin ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'
                   }`}
@@ -110,7 +101,7 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setIsLogin(false); setTokenInfo(null); }}
+                  onClick={() => { setIsLogin(false); setTokenInfo(null); setCustomError(''); }}
                   className={`flex-1 pb-2.5 text-sm font-semibold border-b-2 transition-all ${
                     !isLogin ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'
                   }`}
@@ -172,7 +163,7 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -196,27 +187,6 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
             </form>
           )}
         </div>
-
-        {/* Demo Accounts Switcher */}
-        {!tokenInfo && (
-          <div className="mt-6 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-850 p-4 rounded-xl text-center">
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold mb-2">Or quick-login as a demo team member:</p>
-            <div className="grid grid-cols-3 gap-2">
-              {mockUsers.map((u) => (
-                <button
-                  key={u.id}
-                  type="button"
-                  onClick={() => handleSelectMockUser(u)}
-                  className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-zinc-50 dark:bg-zinc-900/50 transition-all text-[10px]"
-                >
-                  <img src={u.avatarUrl} alt={u.name} className="w-7 h-7 rounded-full border border-zinc-300 dark:border-zinc-700 mb-1" />
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 truncate w-full">{u.name.split(' ')[0]}</span>
-                  <span className="text-[8px] text-indigo-400 capitalize">{u.id === 'user-pm' ? 'Lead' : 'Dev'}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
