@@ -40,7 +40,10 @@ import {
   User as UserIcon,
 } from 'lucide-react';
 
+import { useProjects } from '../hooks';
+
 export default function Home() {
+  const { fetchFullProjects } = useProjects();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<string>('dashboard');
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -54,23 +57,20 @@ export default function Home() {
 
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
-  const fetchProjects = async () => {
+  const loadProjects = async () => {
     try {
-      const response = await fetch('http://localhost:3001/projects/full');
-      if (response.ok) {
-        const data = await response.json();
-        const { projects, dependencies } = data;
-        
-        setProjects(projects.map((p: any) => ({ ...p, status: p.status as any })));
-        
-        const allEpics = projects.flatMap((p: any) => p.epics);
-        setEpics(allEpics);
-        
-        const allTasks = projects.flatMap((p: any) => p.tasks);
-        setTasks(allTasks);
-        
-        setDependencies(dependencies);
-      }
+      const data = await fetchFullProjects();
+      const { projects: fetchedProjects, dependencies: fetchedDeps } = data;
+      
+      setProjects(fetchedProjects.map((p: any) => ({ ...p, status: p.status as any })));
+      
+      const allEpics = fetchedProjects.flatMap((p: any) => p.epics || []);
+      setEpics(allEpics);
+      
+      const allTasks = fetchedProjects.flatMap((p: any) => p.tasks || []);
+      setTasks(allTasks);
+      
+      setDependencies(fetchedDeps);
     } catch (error) {
       console.error('Failed to fetch projects from backend:', error);
     }
@@ -78,7 +78,7 @@ export default function Home() {
 
   // Fetch projects from PostgreSQL Backend
   useEffect(() => {
-    fetchProjects();
+    loadProjects();
 
     // Auth Check
     const storedUser = localStorage.getItem('assistant_current_user');
@@ -342,7 +342,7 @@ export default function Home() {
 
   // AI project generator handler
   const handleProjectImported = async () => {
-    await fetchProjects();
+    await loadProjects();
     setCurrentView('dashboard');
   };
 

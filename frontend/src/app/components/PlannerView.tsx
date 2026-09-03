@@ -4,13 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Terminal, FileText, Send, Layers, GitFork, ArrowRight, Play, Paperclip, X, Database, Network, GitBranch } from 'lucide-react';
 import mermaid from 'mermaid';
 
-import { GeneratedProjectPlan, GeneratedEpic, GeneratedTask, GeneratedSubtask } from '../../hooks/useAiPlanner';
+import { useAiPlanner, useProjects, GeneratedProjectPlan, GeneratedEpic, GeneratedTask, GeneratedSubtask } from '../../hooks';
 
 interface PlannerViewProps {
   onProjectImported: () => void;
 }
 
 export default function PlannerView({ onProjectImported }: PlannerViewProps) {
+  const { generatePlan } = useAiPlanner();
+  const { importGeneratedPlan } = useProjects();
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -58,22 +60,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
     setErrorMsg('');
 
     try {
-      const formData = new FormData();
-      formData.append('prompt', prompt);
-      files.forEach((file) => {
-        formData.append('files', file); // 'files' must match what Multer expects in the backend
-      });
-
-      const response = await fetch('http://localhost:3001/ai/generate-plan', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate project plan from the backend.');
-      }
-
-      const resultPlan = await response.json();
+      const resultPlan = await generatePlan(prompt, files);
       setGeneratedPlan(resultPlan);
     } catch (error: any) {
       console.error('Generation error:', error);
@@ -87,12 +74,7 @@ export default function PlannerView({ onProjectImported }: PlannerViewProps) {
     if (!generatedPlan) return;
     setIsImporting(true);
     try {
-      const response = await fetch('http://localhost:3001/projects/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(generatedPlan),
-      });
-      if (!response.ok) throw new Error('Failed to import project');
+      await importGeneratedPlan(generatedPlan);
       onProjectImported();
     } catch (error: any) {
       setErrorMsg(error.message || 'Import failed');

@@ -5,54 +5,43 @@ import { LogIn, UserPlus, Key, Mail, User as UserIcon, Lock, Sparkles, ArrowRigh
 import { User } from '../types';
 import { mockUsers } from '../mockInitialData';
 
+import { useAuth } from '../../hooks/useAuth';
+
 interface AuthModalProps {
   onLogin: (user: User) => void;
 }
 
 export default function AuthModal({ onLogin }: AuthModalProps) {
+  const { login, register, loading: authLoading, error: authError } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('alex@example.com');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [customError, setCustomError] = useState('');
   const [tokenInfo, setTokenInfo] = useState<{ accessToken: string; refreshToken: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setCustomError('');
 
     try {
-      const endpoint = isLogin ? 'http://localhost:3001/auth/login' : 'http://localhost:3001/auth/register';
-      const body = isLogin ? { email, password } : { email, password, name: name || 'New User' };
+      const loggedUser = isLogin
+        ? await login(email, password)
+        : await register(name || 'New User', email, password);
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Authentication failed');
-      }
-
-      const data = await response.json();
-      
       setTokenInfo({
-        accessToken: data.access_token,
+        accessToken: token || '',
         refreshToken: 'refresh_token_rot_jwt_' + Math.random().toString(36).substring(2),
       });
 
       setTimeout(() => {
-        onLogin(data.user);
+        onLogin(loggedUser);
       }, 1200);
     } catch (err: any) {
-      setError(err.message || 'Network error');
-    } finally {
-      setLoading(false);
+      setCustomError(err.message || 'Authentication failed');
     }
   };
 
@@ -130,9 +119,9 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
                 </button>
               </div>
 
-              {error && (
+              {(authError || customError) && (
                 <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-400 text-center font-semibold">
-                  {error}
+                  {authError || customError}
                 </div>
               )}
 
@@ -192,10 +181,10 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={authLoading}
                 className="w-full mt-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl py-2 text-sm shadow-lg shadow-indigo-600/10 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
               >
-                {loading ? (
+                {authLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
