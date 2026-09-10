@@ -75,27 +75,30 @@ export default function TaskModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
       {/* Click outside to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      {/* Slide-over panel */}
-      <div className="relative w-full max-w-lg h-full bg-white dark:bg-zinc-950 border-l border-zinc-200 dark:border-zinc-800 p-6 flex flex-col justify-between shadow-2xl relative z-10 animate-slide-left">
+      {/* Centered Modal Panel */}
+      <div className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 md:p-8 rounded-3xl flex flex-col justify-between shadow-2xl z-10 overflow-hidden animate-fade-in">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-850 pb-4 shrink-0">
-          <div className="flex items-center gap-1.5 text-xs text-indigo-400 font-bold uppercase tracking-wider">
-            <Sparkles className="w-4 h-4 text-indigo-400" /> AI Task Assistant
+          <div className="flex items-center gap-2 text-xs text-indigo-400 font-bold uppercase tracking-wider">
+            <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-400">
+              <Sparkles className="w-4 h-4 text-indigo-400" />
+            </div>
+            AI Task Assistant
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-zinc-905 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:text-zinc-200 transition-colors"
+            className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:text-zinc-200 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-5 pr-1">
+        <div className="flex-1 overflow-y-auto py-4 space-y-5 pr-2 custom-scrollbar">
           {/* Title Editor */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">Task Title</label>

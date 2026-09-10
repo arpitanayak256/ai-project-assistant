@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Universal Pointer Cursor for Buttons & Clickable Elements */
+button,
+[role="button"],
+select,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+select:disabled,
+input:disabled {
+  cursor: not-allowed;
+}
+
 /* Custom Scrollbar for better UI in both themes */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
