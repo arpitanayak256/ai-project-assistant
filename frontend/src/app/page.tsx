@@ -232,6 +232,10 @@ export default function Home() {
     setEpics((prev) => [...prev, epic]);
   };
 
+  const handleUpdateEpic = (updatedEpic: Epic) => {
+    setEpics((prev) => prev.map((e) => (e.id === updatedEpic.id ? updatedEpic : e)));
+  };
+
   const handleUpdateTask = (updatedTask: Task) => {
     setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
   };
@@ -537,6 +541,7 @@ export default function Home() {
               users={mockUsers}
               onSelectTask={setSelectedTaskId}
               onAddEpic={handleAddEpic}
+              onUpdateEpic={handleUpdateEpic}
               onAddTask={handleAddTask}
             />
           )}

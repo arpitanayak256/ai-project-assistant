@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Project, Task, Epic, User } from '../types';
-import { ChevronDown, ChevronRight, Layers, Clock, ShieldAlert, Plus, CheckCircle } from 'lucide-react';
+import { ChevronDown, ChevronRight, Layers, Clock, ShieldAlert, Plus, CheckCircle, X } from 'lucide-react';
 
 interface ListViewProps {
   project: Project;
@@ -11,6 +11,7 @@ interface ListViewProps {
   users: User[];
   onSelectTask: (taskId: string) => void;
   onAddEpic: (epic: Omit<Epic, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onUpdateEpic?: (epic: Epic) => void;
   onAddTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
 }
 
@@ -21,12 +22,16 @@ export default function ListView({
   users,
   onSelectTask,
   onAddEpic,
+  onUpdateEpic,
   onAddTask,
 }: ListViewProps) {
   const [expandedEpics, setExpandedEpics] = useState<Record<string, boolean>>({});
   const [isAddingEpic, setIsAddingEpic] = useState(false);
   const [epicTitle, setEpicTitle] = useState('');
   const [epicDesc, setEpicDesc] = useState('');
+  const [selectedEpicForModal, setSelectedEpicForModal] = useState<Epic | null>(null);
+  const [editEpicTitle, setEditEpicTitle] = useState('');
+  const [editEpicDesc, setEditEpicDesc] = useState('');
   const [addingTaskEpicId, setAddingTaskEpicId] = useState<string | null>(null);
   const [taskTitle, setTaskTitle] = useState('');
 
@@ -66,6 +71,27 @@ export default function ListView({
     setEpicTitle('');
     setEpicDesc('');
     setIsAddingEpic(false);
+  };
+
+  const handleOpenEpicModal = (epic: Epic) => {
+    setSelectedEpicForModal(epic);
+    setEditEpicTitle(epic.title);
+    setEditEpicDesc(epic.description || '');
+  };
+
+  const handleUpdateEpicSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedEpicForModal || !editEpicTitle.trim()) return;
+
+    if (onUpdateEpic) {
+      onUpdateEpic({
+        ...selectedEpicForModal,
+        title: editEpicTitle,
+        description: editEpicDesc,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    setSelectedEpicForModal(null);
   };
 
   const handleCreateQuickTask = (epicId: string | null) => {
@@ -119,41 +145,184 @@ export default function ListView({
         </button>
       </div>
 
-      {/* Epic Creator Form */}
-      {isAddingEpic && (
-        <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl animate-slide-down">
-          <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-3 uppercase tracking-wide">Create Project Epic</h3>
-          <form onSubmit={handleCreateEpic} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase">Epic Name</label>
-              <input
-                type="text"
-                placeholder="e.g. Database & API Foundation"
-                value={epicTitle}
-                onChange={(e) => setEpicTitle(e.target.value)}
-                className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500"
-                required
-              />
-            </div>
-            <div className="md:col-span-2 space-y-1.5">
-              <label className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase">Description</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="e.g. Set up core schemas, schemas migrations, API route auth filters..."
-                  value={epicDesc}
-                  onChange={(e) => setEpicDesc(e.target.value)}
-                  className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500"
-                />
-                <button
-                  type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-4 py-2 rounded-xl shrink-0"
-                >
-                  Save Epic
-                </button>
-              </div>
-            </div>
-          </form>
+      {/* Centered Square Epic Modal */}
+      {(isAddingEpic || selectedEpicForModal) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0"
+            onClick={() => {
+              setIsAddingEpic(false);
+              setSelectedEpicForModal(null);
+            }}
+          />
+
+          {/* Square Modal Panel (Enlarged) */}
+          <div className="relative w-full max-w-[600px] aspect-square max-h-[92vh] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-2xl flex flex-col justify-between z-10 overflow-hidden">
+            {isAddingEpic ? (
+              /* Create Epic Modal */
+              <form onSubmit={handleCreateEpic} className="h-full flex flex-col justify-between">
+                {/* Header */}
+                <div className="flex items-center justify-between pb-5 border-b border-zinc-200 dark:border-zinc-850 shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-indigo-500/10 rounded-2xl text-indigo-400">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Create Project Epic</h3>
+                      <span className="text-xs text-zinc-500 font-medium">Add a high-level milestone and deliverable stream</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingEpic(false)}
+                    className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Form Inputs */}
+                <div className="flex-1 py-5 space-y-5 overflow-y-auto pr-1">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                      Epic Title
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Core Authentication & Database Architecture"
+                      value={epicTitle}
+                      onChange={(e) => setEpicTitle(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 font-medium transition-colors"
+                      required
+                      autoFocus
+                    />
+                  </div>
+
+                  <div className="space-y-2 flex flex-col flex-1">
+                    <label className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                      Description & Scope
+                    </label>
+                    <textarea
+                      placeholder="Outline the architectural goals, core deliverables, and prerequisites..."
+                      value={epicDesc}
+                      onChange={(e) => setEpicDesc(e.target.value)}
+                      className="w-full h-44 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Footer Controls */}
+                <div className="pt-4 border-t border-zinc-200 dark:border-zinc-850 flex justify-end gap-3 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingEpic(false)}
+                    className="px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-all active:scale-[0.98] shadow-md shadow-indigo-600/10"
+                  >
+                    Save Epic
+                  </button>
+                </div>
+              </form>
+            ) : selectedEpicForModal ? (
+              /* View/Edit Existing Epic Modal */
+              <form onSubmit={handleUpdateEpicSubmit} className="h-full flex flex-col justify-between">
+                {/* Header */}
+                <div className="flex items-center justify-between pb-5 border-b border-zinc-200 dark:border-zinc-850 shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-indigo-500/10 rounded-2xl text-indigo-400">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Epic Details</h3>
+                      <span className="text-xs text-zinc-500 font-medium">View and update milestone scope</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedEpicForModal(null)}
+                    className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 py-5 space-y-5 overflow-y-auto pr-1">
+                  {/* Stats Pill */}
+                  {(() => {
+                    const modalEpicTasks = tasksByEpic[selectedEpicForModal.id] || [];
+                    const doneCount = modalEpicTasks.filter((t) => t.status === 'DONE').length;
+                    const hours = modalEpicTasks.reduce((s, t) => s + (t.estimatedHours || 0), 0);
+
+                    return (
+                      <div className="grid grid-cols-3 gap-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-850 p-3.5 rounded-2xl text-center">
+                        <div>
+                          <span className="text-[10px] text-zinc-500 block uppercase font-bold tracking-wider">Tasks</span>
+                          <span className="text-sm font-extrabold text-zinc-800 dark:text-zinc-200">{modalEpicTasks.length}</span>
+                        </div>
+                        <div className="border-x border-zinc-200 dark:border-zinc-800">
+                          <span className="text-[10px] text-zinc-500 block uppercase font-bold tracking-wider">Completed</span>
+                          <span className="text-sm font-extrabold text-emerald-500">{doneCount}/{modalEpicTasks.length}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-zinc-500 block uppercase font-bold tracking-wider">Effort</span>
+                          <span className="text-sm font-extrabold text-zinc-800 dark:text-zinc-200">{hours}h</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                      Epic Title
+                    </label>
+                    <input
+                      type="text"
+                      value={editEpicTitle}
+                      onChange={(e) => setEditEpicTitle(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500 font-semibold transition-colors"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2 flex flex-col flex-1">
+                    <label className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                      Description & Scope
+                    </label>
+                    <textarea
+                      value={editEpicDesc}
+                      onChange={(e) => setEditEpicDesc(e.target.value)}
+                      placeholder="Add detailed epic description..."
+                      className="w-full h-36 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Footer Controls */}
+                <div className="pt-4 border-t border-zinc-200 dark:border-zinc-850 flex justify-end gap-3 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedEpicForModal(null)}
+                    className="px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-all active:scale-[0.98] shadow-md shadow-indigo-600/10"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            ) : null}
+          </div>
         </div>
       )}
 
@@ -169,18 +338,26 @@ export default function ListView({
             <div key={epic.id} className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-850 rounded-2xl overflow-hidden">
               {/* Epic Summary Header */}
               <div
-                onClick={() => toggleEpic(epic.id)}
-                className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:bg-zinc-900/40 select-none"
+                onClick={() => handleOpenEpicModal(epic)}
+                className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:bg-zinc-900/40 select-none group"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="text-zinc-500 dark:text-zinc-500">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleEpic(epic.id);
+                    }}
+                    className="text-zinc-500 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 p-1 rounded-lg hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-colors"
+                    title={isExpanded ? 'Collapse tasks' : 'Expand tasks'}
+                  >
                     {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                  </div>
+                  </button>
                   <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-400 shrink-0">
                     <Layers className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 line-clamp-1">{epic.title}</h3>
+                    <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 line-clamp-1 group-hover:text-indigo-400 transition-colors">{epic.title}</h3>
                     <p className="text-[10px] text-zinc-500 dark:text-zinc-500 line-clamp-1 mt-0.5">{epic.description}</p>
                   </div>
                 </div>
