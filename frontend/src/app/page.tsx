@@ -402,7 +402,7 @@ export default function Home() {
           <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-              { id: 'planner', label: 'AI Requirement Planner', icon: Sparkles, highlight: true },
+              { id: 'planner', label: 'AI Requirement Planner', icon: Sparkles },
               { id: 'board', label: 'Kanban Board', icon: KanbanSquare },
               { id: 'list', label: 'Epic List View', icon: Layers },
               { id: 'chat', label: 'AI Project Chat', icon: MessageCircle },
@@ -415,12 +415,10 @@ export default function Home() {
                 <button
                   key={link.id}
                   onClick={() => setCurrentView(link.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-150 ${
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/10'
-                      : link.highlight
-                      ? 'text-indigo-400 bg-indigo-500/5 border border-indigo-500/10 hover:bg-indigo-500/10'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-zinc-900 hover:text-zinc-800 dark:text-zinc-200'
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-850 hover:text-zinc-900 dark:hover:text-zinc-100'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -500,14 +498,6 @@ export default function Home() {
 
         {/* Scrollable View Content */}
         <div className="flex-1 overflow-y-auto p-6 relative z-1">
-          {/* Neon background light spots */}
-          {currentView !== 'list' && (
-            <>
-              <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-600/5 rounded-full blur-3xl pointer-events-none" />
-            </>
-          )}
-
           {/* View Router Renderings */}
           {currentView === 'dashboard' && (
             <DashboardView
