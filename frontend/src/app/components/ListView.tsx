@@ -119,21 +119,21 @@ export default function ListView({
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'URGENT': return 'text-red-400';
-      case 'HIGH': return 'text-orange-400';
-      case 'MEDIUM': return 'text-yellow-400';
-      case 'LOW': return 'text-blue-400';
+      case 'URGENT': return 'text-red-500 dark:text-red-400';
+      case 'HIGH': return 'text-amber-600 dark:text-amber-400';
+      case 'MEDIUM': return 'text-zinc-600 dark:text-zinc-400';
+      case 'LOW': return 'text-zinc-500 dark:text-zinc-500';
       default: return 'text-zinc-600 dark:text-zinc-400';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'TODO': return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-700/50';
-      case 'IN_PROGRESS': return 'bg-indigo-950 text-indigo-400 border border-indigo-500/20';
-      case 'IN_REVIEW': return 'bg-violet-950 text-violet-400 border border-violet-500/20';
-      case 'DONE': return 'bg-emerald-950 text-emerald-400 border border-emerald-500/20';
-      default: return 'bg-white dark:bg-zinc-950 text-zinc-500 dark:text-zinc-500';
+      case 'TODO': return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700';
+      case 'IN_PROGRESS': return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-600';
+      case 'IN_REVIEW': return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-600';
+      case 'DONE': return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-600';
+      default: return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700';
     }
   };
 
@@ -143,7 +143,7 @@ export default function ListView({
       <div className="flex justify-end items-center">
         <button
           onClick={() => setIsAddingEpic(true)}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-[0.98]"
+          className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-[0.98]"
         >
           <Plus className="w-4 h-4" /> Add Epic
         </button>
@@ -169,7 +169,7 @@ export default function ListView({
                 {/* Header */}
                 <div className="flex items-center justify-between pb-5 border-b border-zinc-200 dark:border-zinc-850 shrink-0">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-indigo-500/10 rounded-2xl text-indigo-400">
+                    <div className="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-2xl text-zinc-700 dark:text-zinc-300">
                       <Layers className="w-5 h-5" />
                     </div>
                     <div>
@@ -197,7 +197,7 @@ export default function ListView({
                       placeholder="e.g. Core Authentication & Database Architecture"
                       value={epicTitle}
                       onChange={(e) => setEpicTitle(e.target.value)}
-                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 font-medium transition-colors"
+                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 font-medium transition-colors"
                       required
                       autoFocus
                     />
@@ -211,7 +211,7 @@ export default function ListView({
                       placeholder="Outline the architectural goals, core deliverables, and prerequisites..."
                       value={epicDesc}
                       onChange={(e) => setEpicDesc(e.target.value)}
-                      className="w-full h-44 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed transition-colors"
+                      className="w-full h-44 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 resize-none leading-relaxed transition-colors"
                     />
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export default function ListView({
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-all active:scale-[0.98] shadow-md shadow-indigo-600/10"
+                    className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-xs rounded-xl transition-all active:scale-[0.98]"
                   >
                     Save Epic
                   </button>
@@ -239,7 +239,7 @@ export default function ListView({
                 {/* Header */}
                 <div className="flex items-center justify-between pb-5 border-b border-zinc-200 dark:border-zinc-850 shrink-0">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-indigo-500/10 rounded-2xl text-indigo-400">
+                    <div className="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-2xl text-zinc-700 dark:text-zinc-300">
                       <Layers className="w-5 h-5" />
                     </div>
                     <div>
@@ -272,7 +272,7 @@ export default function ListView({
                         </div>
                         <div className="border-x border-zinc-200 dark:border-zinc-800">
                           <span className="text-[10px] text-zinc-500 block uppercase font-bold tracking-wider">Completed</span>
-                          <span className="text-sm font-extrabold text-emerald-500">{doneCount}/{modalEpicTasks.length}</span>
+                          <span className="text-sm font-extrabold text-zinc-800 dark:text-zinc-200">{doneCount}/{modalEpicTasks.length}</span>
                         </div>
                         <div>
                           <span className="text-[10px] text-zinc-500 block uppercase font-bold tracking-wider">Effort</span>
@@ -290,7 +290,7 @@ export default function ListView({
                       type="text"
                       value={editEpicTitle}
                       onChange={(e) => setEditEpicTitle(e.target.value)}
-                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500 font-semibold transition-colors"
+                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 font-semibold transition-colors"
                       required
                     />
                   </div>
@@ -303,7 +303,7 @@ export default function ListView({
                       value={editEpicDesc}
                       onChange={(e) => setEditEpicDesc(e.target.value)}
                       placeholder="Add detailed epic description..."
-                      className="w-full h-36 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed transition-colors"
+                      className="w-full h-36 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 resize-none leading-relaxed transition-colors"
                     />
                   </div>
                 </div>
@@ -319,7 +319,7 @@ export default function ListView({
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-all active:scale-[0.98] shadow-md shadow-indigo-600/10"
+                    className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-xs rounded-xl transition-all active:scale-[0.98]"
                   >
                     Save Changes
                   </button>
@@ -339,11 +339,11 @@ export default function ListView({
           const totalHours = epicTasks.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
 
           return (
-            <div key={epic.id} className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-850 rounded-2xl overflow-hidden">
+            <div key={epic.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden">
               {/* Epic Summary Header */}
               <div
                 onClick={() => handleOpenEpicModal(epic)}
-                className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:bg-zinc-900/40 select-none group"
+                className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-850 select-none group transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <button
@@ -352,33 +352,33 @@ export default function ListView({
                       e.stopPropagation();
                       toggleEpic(epic.id);
                     }}
-                    className="text-zinc-500 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 p-1 rounded-lg hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-colors"
+                    className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     title={isExpanded ? 'Collapse tasks' : 'Expand tasks'}
                   >
                     {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </button>
-                  <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-400 shrink-0">
+                  <div className="p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400 shrink-0">
                     <Layers className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 line-clamp-1 group-hover:text-indigo-400 transition-colors">{epic.title}</h3>
+                    <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 line-clamp-1 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">{epic.title}</h3>
                     <p className="text-[10px] text-zinc-500 dark:text-zinc-500 line-clamp-1 mt-0.5">{epic.description}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 text-[10px] text-zinc-600 dark:text-zinc-400 font-medium shrink-0">
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-semibold border border-zinc-200 dark:border-zinc-800">
-                    <Clock className="w-3.5 h-3.5 text-indigo-400" /> Execution Time: <strong className="text-zinc-900 dark:text-zinc-100">{totalHours}h</strong>
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold border border-zinc-200 dark:border-zinc-700">
+                    <Clock className="w-3.5 h-3.5 text-zinc-500" /> Execution Time: <strong className="text-zinc-900 dark:text-zinc-100">{totalHours}h</strong>
                   </span>
-                  <span className="flex items-center gap-1 text-emerald-400">
-                    <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> {completedTasks}/{epicTasks.length} tasks done
+                  <span className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400">
+                    <CheckCircle className="w-3.5 h-3.5 text-zinc-500" /> {completedTasks}/{epicTasks.length} tasks done
                   </span>
                 </div>
               </div>
 
               {/* Epic Tasks List Accordion Body */}
               {isExpanded && (
-                <div className="p-4 bg-white dark:bg-zinc-950/30 space-y-3 animate-fade-in">
+                <div className="p-4 bg-white dark:bg-zinc-900 space-y-3">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
@@ -405,9 +405,9 @@ export default function ListView({
                               <tr
                                 key={task.id}
                                 onClick={() => onSelectTask(task.id)}
-                                className="group hover:bg-zinc-50 dark:bg-zinc-900/30 cursor-pointer"
+                                className="group hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition-colors"
                               >
-                                <td className="py-3 font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-400 transition-colors pr-2">
+                                <td className="py-3 font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors pr-2">
                                   {task.title}
                                 </td>
                                 <td className="py-3">
@@ -448,11 +448,11 @@ export default function ListView({
                           placeholder="Task Title..."
                           value={taskTitle}
                           onChange={(e) => setTaskTitle(e.target.value)}
-                          className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500"
+                          className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                           autoFocus
                         />
                         <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-2.5 py-1.5 shrink-0">
-                          <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                          <Clock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                           <input
                             type="number"
                             min="1"
@@ -466,7 +466,7 @@ export default function ListView({
                         </div>
                         <button
                           onClick={() => handleCreateQuickTask(epic.id)}
-                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3.5 py-1.5 rounded-xl shrink-0"
+                          className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-xs px-3.5 py-1.5 rounded-xl shrink-0"
                         >
                           Save Task
                         </button>
@@ -480,7 +480,7 @@ export default function ListView({
                     ) : (
                       <button
                         onClick={() => { setAddingTaskEpicId(epic.id); setTaskTitle(''); setTaskHours(8); }}
-                        className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 hover:text-indigo-400 flex items-center gap-1"
+                        className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 flex items-center gap-1"
                       >
                         <Plus className="w-3.5 h-3.5" /> Quick Add Task
                       </button>
@@ -494,7 +494,7 @@ export default function ListView({
 
         {/* Unassigned Tasks */}
         {unassignedTasks.length > 0 && (
-          <div className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-850 rounded-2xl overflow-hidden">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <div className="p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400">
@@ -506,7 +506,7 @@ export default function ListView({
                 </div>
               </div>
             </div>
-            <div className="p-4 bg-white dark:bg-zinc-950/30">
+            <div className="p-4 bg-white dark:bg-zinc-900">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">
@@ -525,9 +525,9 @@ export default function ListView({
                       <tr
                         key={task.id}
                         onClick={() => onSelectTask(task.id)}
-                        className="group hover:bg-zinc-50 dark:bg-zinc-900/30 cursor-pointer"
+                        className="group hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition-colors"
                       >
-                        <td className="py-3 font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-400 transition-colors pr-2">
+                        <td className="py-3 font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors pr-2">
                           {task.title}
                         </td>
                         <td className="py-3">

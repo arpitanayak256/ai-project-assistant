@@ -501,8 +501,12 @@ export default function Home() {
         {/* Scrollable View Content */}
         <div className="flex-1 overflow-y-auto p-6 relative z-1">
           {/* Neon background light spots */}
-          <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-600/5 rounded-full blur-3xl pointer-events-none" />
+          {currentView !== 'list' && (
+            <>
+              <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-600/5 rounded-full blur-3xl pointer-events-none" />
+            </>
+          )}
 
           {/* View Router Renderings */}
           {currentView === 'dashboard' && (
