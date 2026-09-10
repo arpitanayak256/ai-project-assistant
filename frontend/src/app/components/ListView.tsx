@@ -13,6 +13,7 @@ interface ListViewProps {
   onAddEpic: (epic: Omit<Epic, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onUpdateEpic?: (epic: Epic) => void;
   onAddTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onUpdateTask?: (task: Task) => void;
 }
 
 export default function ListView({
@@ -24,6 +25,7 @@ export default function ListView({
   onAddEpic,
   onUpdateEpic,
   onAddTask,
+  onUpdateTask,
 }: ListViewProps) {
   const [expandedEpics, setExpandedEpics] = useState<Record<string, boolean>>({});
   const [isAddingEpic, setIsAddingEpic] = useState(false);
@@ -34,6 +36,7 @@ export default function ListView({
   const [editEpicDesc, setEditEpicDesc] = useState('');
   const [addingTaskEpicId, setAddingTaskEpicId] = useState<string | null>(null);
   const [taskTitle, setTaskTitle] = useState('');
+  const [taskHours, setTaskHours] = useState(8);
 
   const projectEpics = epics.filter(e => e.projectId === project.id);
   const projectTasks = tasks.filter(t => t.projectId === project.id);
@@ -104,12 +107,13 @@ export default function ListView({
       description: 'Add detailed description...',
       status: 'TODO',
       priority: 'MEDIUM',
-      estimatedHours: 8,
+      estimatedHours: taskHours > 0 ? taskHours : 8,
       assigneeId: null,
       aiExplanation: 'Quick task added.'
     });
 
     setTaskTitle('');
+    setTaskHours(8);
     setAddingTaskEpicId(null);
   };
 
@@ -363,8 +367,8 @@ export default function ListView({
                 </div>
 
                 <div className="flex items-center gap-4 text-[10px] text-zinc-600 dark:text-zinc-400 font-medium shrink-0">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-zinc-550" /> {totalHours}h estimated
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-850 text-zinc-700 dark:text-zinc-300 font-semibold border border-zinc-200 dark:border-zinc-800">
+                    <Clock className="w-3.5 h-3.5 text-indigo-400" /> Execution Time: <strong className="text-zinc-900 dark:text-zinc-100">{totalHours}h</strong>
                   </span>
                   <span className="flex items-center gap-1 text-emerald-400">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> {completedTasks}/{epicTasks.length} tasks done
@@ -379,11 +383,11 @@ export default function ListView({
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">
-                          <th className="pb-2 w-[45%]">Task Title</th>
+                          <th className="pb-2 w-[40%]">Task Title</th>
                           <th className="pb-2 w-[15%]">Status</th>
                           <th className="pb-2 w-[15%]">Priority</th>
-                          <th className="pb-2 w-[12%]">Estimate</th>
-                          <th className="pb-2 w-[13%]">Assignee</th>
+                          <th className="pb-2 w-[16%]">Execution Time</th>
+                          <th className="pb-2 w-[14%]">Assignee</th>
                         </tr>
                       </thead>
                       <tbody className="text-xs">
@@ -438,30 +442,44 @@ export default function ListView({
                   {/* Quick Task Injector */}
                   <div className="pt-2">
                     {addingTaskEpicId === epic.id ? (
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center">
                         <input
                           type="text"
-                          placeholder="Quick Task Title..."
+                          placeholder="Task Title..."
                           value={taskTitle}
                           onChange={(e) => setTaskTitle(e.target.value)}
                           className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500"
+                          autoFocus
                         />
+                        <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-2.5 py-1.5 shrink-0">
+                          <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                          <input
+                            type="number"
+                            min="1"
+                            max="999"
+                            value={taskHours}
+                            onChange={(e) => setTaskHours(Number(e.target.value))}
+                            className="w-10 bg-transparent text-xs font-semibold text-zinc-700 dark:text-zinc-300 focus:outline-none text-center"
+                            title="Execution Time (Hours)"
+                          />
+                          <span className="text-[10px] text-zinc-500">h</span>
+                        </div>
                         <button
                           onClick={() => handleCreateQuickTask(epic.id)}
-                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3 py-1.5 rounded-xl"
+                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3.5 py-1.5 rounded-xl shrink-0"
                         >
-                          Save
+                          Save Task
                         </button>
                         <button
                           onClick={() => setAddingTaskEpicId(null)}
-                          className="border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs px-3 py-1.5 rounded-xl hover:text-zinc-800 dark:text-zinc-200"
+                          className="border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs px-3 py-1.5 rounded-xl hover:text-zinc-800 dark:text-zinc-200 shrink-0"
                         >
                           Cancel
                         </button>
                       </div>
                     ) : (
                       <button
-                        onClick={() => { setAddingTaskEpicId(epic.id); setTaskTitle(''); }}
+                        onClick={() => { setAddingTaskEpicId(epic.id); setTaskTitle(''); setTaskHours(8); }}
                         className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 hover:text-indigo-400 flex items-center gap-1"
                       >
                         <Plus className="w-3.5 h-3.5" /> Quick Add Task
@@ -492,11 +510,11 @@ export default function ListView({
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">
-                    <th className="pb-2 w-[45%]">Task Title</th>
+                    <th className="pb-2 w-[40%]">Task Title</th>
                     <th className="pb-2 w-[15%]">Status</th>
                     <th className="pb-2 w-[15%]">Priority</th>
-                    <th className="pb-2 w-[12%]">Estimate</th>
-                    <th className="pb-2 w-[13%]">Assignee</th>
+                    <th className="pb-2 w-[16%]">Execution Time</th>
+                    <th className="pb-2 w-[14%]">Assignee</th>
                   </tr>
                 </thead>
                 <tbody className="text-xs">

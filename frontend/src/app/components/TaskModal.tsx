@@ -153,7 +153,7 @@ export default function TaskModal({
               </select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">Estimated Hours</label>
+              <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">Execution Time (Hours)</label>
               <div className="relative">
                 <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-550" />
                 <input

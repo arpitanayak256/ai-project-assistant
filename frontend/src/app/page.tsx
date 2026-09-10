@@ -405,7 +405,6 @@ export default function Home() {
               { id: 'planner', label: 'AI Requirement Planner', icon: Sparkles, highlight: true },
               { id: 'board', label: 'Kanban Board', icon: KanbanSquare },
               { id: 'list', label: 'Epic List View', icon: Layers },
-              { id: 'timeline', label: 'Execution Timeline', icon: CalendarDays },
               { id: 'chat', label: 'AI Project Chat', icon: MessageCircle },
               { id: 'health', label: 'Workspace Health', icon: Activity, badge: projectHealth?.score },
             ].map((link) => {
@@ -543,16 +542,7 @@ export default function Home() {
               onAddEpic={handleAddEpic}
               onUpdateEpic={handleUpdateEpic}
               onAddTask={handleAddTask}
-            />
-          )}
-
-          {currentView === 'timeline' && activeProject && (
-            <TimelineView
-              project={activeProject}
-              tasks={tasks}
-              epics={epics}
-              dependencies={dependencies}
-              onSelectTask={setSelectedTaskId}
+              onUpdateTask={handleUpdateTask}
             />
           )}
 
