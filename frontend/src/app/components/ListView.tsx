@@ -110,8 +110,7 @@ export default function ListView({
   return (
     <div className="space-y-4">
       {/* Epic Actions */}
-      <div className="flex justify-between items-center bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/80 p-4 rounded-2xl">
-        <span className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold uppercase tracking-wide">Structured Epic List</span>
+      <div className="flex justify-end items-center">
         <button
           onClick={() => setIsAddingEpic(true)}
           className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-[0.98]"
@@ -171,7 +170,7 @@ export default function ListView({
               {/* Epic Summary Header */}
               <div
                 onClick={() => toggleEpic(epic.id)}
-                className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:bg-zinc-900/40 select-none border-b border-zinc-200 dark:border-zinc-850/50"
+                className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50 dark:bg-zinc-900/40 select-none"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="text-zinc-500 dark:text-zinc-500">
@@ -202,7 +201,7 @@ export default function ListView({
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-zinc-200 dark:border-zinc-800 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">
+                        <tr className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">
                           <th className="pb-2 w-[45%]">Task Title</th>
                           <th className="pb-2 w-[15%]">Status</th>
                           <th className="pb-2 w-[15%]">Priority</th>
@@ -210,7 +209,7 @@ export default function ListView({
                           <th className="pb-2 w-[13%]">Assignee</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-zinc-900 text-xs">
+                      <tbody className="text-xs">
                         {epicTasks.length === 0 ? (
                           <tr>
                             <td colSpan={5} className="py-4 text-center text-zinc-650 text-[10px]">
@@ -260,7 +259,7 @@ export default function ListView({
                   </div>
 
                   {/* Quick Task Injector */}
-                  <div className="pt-2 border-t border-zinc-200 dark:border-zinc-900">
+                  <div className="pt-2">
                     {addingTaskEpicId === epic.id ? (
                       <div className="flex gap-2">
                         <input
@@ -301,7 +300,7 @@ export default function ListView({
         {/* Unassigned Tasks */}
         {unassignedTasks.length > 0 && (
           <div className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-850 rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-850/50">
+            <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <div className="p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400">
                   <ShieldAlert className="w-4 h-4" />
@@ -315,7 +314,7 @@ export default function ListView({
             <div className="p-4 bg-white dark:bg-zinc-950/30">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-zinc-200 dark:border-zinc-800 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">
+                  <tr className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase">
                     <th className="pb-2 w-[45%]">Task Title</th>
                     <th className="pb-2 w-[15%]">Status</th>
                     <th className="pb-2 w-[15%]">Priority</th>
@@ -323,7 +322,7 @@ export default function ListView({
                     <th className="pb-2 w-[13%]">Assignee</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-900 text-xs">
+                <tbody className="text-xs">
                   {unassignedTasks.map((task) => {
                     const assignee = users.find(u => u.id === task.assigneeId);
 
